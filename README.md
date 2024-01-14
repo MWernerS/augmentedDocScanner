@@ -4,5 +4,17 @@ The ADS will take an image or multiple images of paper with a qr code on them an
 
 Meet the Team
 
-Gregory Auten
+Michael Werner - Team Lead
+I am a 22 year old senior here at Eastern Michigan university. I took on team lead because I wanted a challenge, though I’m sure this class will be a challenge itself. I am looking to go into software development or follow my folks into IT management.
+
+Blake Eastman - Deputy Team Lead
+
+Bryce Sayre - Team Member
+
+Eric Eisele - Team Member
+
+Gregory Auten - Team Member
 Senior Computer Science Major on his last semester at EMU. Love gaming, working out, and programming which I hope to apply the former two things with the latter for when I get work in the future.
+
+Michael Deaunee - Team Member
+
