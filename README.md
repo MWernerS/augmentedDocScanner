@@ -10,6 +10,7 @@ I am a 22 year old senior here at Eastern Michigan university. I took on team le
 Blake Eastman - Deputy Team Lead
 
 Bryce Sayre - Team Member
+Senior Computer Science Major in my last semester at EMU. I like to golf in the summer, and rock climb in the winter. I’m excited to graduate and use the skills I've accrued here at EMU to start a career in software development, and this project seems like a great last step before accomplishing that.
 
 Eric Eisele - Team Member
 
