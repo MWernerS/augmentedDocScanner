@@ -17,4 +17,4 @@ Gregory Auten - Team Member
 Senior Computer Science Major on his last semester at EMU. Love gaming, working out, and programming which I hope to apply the former two things with the latter for when I get work in the future.
 
 Michael Deaunee - Team Member
-
+Senior Computer Science Major on his second to last semester at EMU. I love basketball, videogames, and golfing. I have been learning code for roughly three years and I hope to challenge and utilize the skills i learned for this project.
