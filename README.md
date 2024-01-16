@@ -8,6 +8,7 @@ Michael Werner - Team Lead
 I am a 22 year old senior here at Eastern Michigan university. I took on team lead because I wanted a challenge, though I’m sure this class will be a challenge itself. I am looking to go into software development or follow my folks into IT management.
 
 Blake Eastman - Deputy Team Lead
+I am a senior studying computer science at EMU. My hobbies include playing the Trombone in the marching band, writing code for personal projects, and watching the Lions win. Someday I would like to be a full time programmer. In the meantine, I do my best.
 
 Bryce Sayre - Team Member
 Senior Computer Science Major in my last semester at EMU. I like to golf in the summer, and rock climb in the winter. I’m excited to graduate and use the skills I've accrued here at EMU to start a career in software development, and this project seems like a great last step before accomplishing that.
