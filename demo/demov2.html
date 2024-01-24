@@ -25,6 +25,7 @@
         {
             document.getElementById('upload_button').hidden=true;
             document.getElementById('camera_button').hidden=true;
+            document.getElementById('output').hidden=true;
             document.getElementById('cam_container').hidden=false;
         }
     </script>
@@ -58,10 +59,11 @@
                     <button id="startCamera" class="btn btn-primary mx-auto clearfix">Start Camera</button>
                     <video id="video" width="100%" height="auto" style="display: none;" class='clearfix'></video>
                     <button id="takePicture" class="btn btn-success clearfix mx-auto my-2" style="display: none;">Take Picture</button>
-                    <div id='canvases'>
+                    <canvas id="canvas" width="100%" height="100%" class="border" hidden></canvas>
+                    <div id='photos'>
 
                     </div>
-                    <img id="photo" alt="photo here" style="display: none;" class="mt-3">
+
                 </div>
             </div>
         </div>
@@ -73,11 +75,10 @@
     document.addEventListener('DOMContentLoaded', function () {
         const startCameraButton = document.getElementById('startCamera');
         const video = document.getElementById('video');
-        //const canvas = document.getElementById('canvas');
-        //const context = canvas.getContext('2d');
-        const photo = document.getElementById('photo');
+        const canvas = document.getElementById('canvas');
+        const context = canvas.getContext('2d');
         const takePictureButton = document.getElementById('takePicture');
-        let canvasNum=1;
+        let photoNum=1;
 
         startCameraButton.addEventListener('click', function () {
             //document.getElementById('canvas').hidden=false;
@@ -104,14 +105,13 @@
         }
 
         function takePicture() {
-            document.getElementById('canvases').innerHTML += `<canvas id="canvas${canvasNum}" width="100%" height="100%" class="border"></canvas>`;
-            let canvas = document.getElementById('canvas'+canvasNum);
-            let context = canvas.getContext('2d');
+            document.getElementById('photos').innerHTML += `<img id="photo${photoNum}" class="m-1">`;
+            let photo = document.getElementById('photo'+photoNum);
 
             context.drawImage(video, 0, 0, canvas.width, canvas.height);
             photo.src = canvas.toDataURL('image/png');
 
-            canvasNum++;
+            photoNum++;
         }
     });
 </script>
