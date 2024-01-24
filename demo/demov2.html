@@ -20,41 +20,22 @@
             };
             reader.readAsDataURL(input.files[0]);
         };
+
+        function switchToCamera()
+        {
+            document.getElementById('upload_button').hidden=true;
+            document.getElementById('camera_button').hidden=true;
+            document.getElementById('cam_container').hidden=false;
+        }
     </script>
 </head>
 <body>
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport">
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <title>Demo Page</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
-    <style>
-        .container-webcam {
-            text-align: center;
-        }
-        .btn-start-camera {
-            margin: auto;
-        }
-    </style>
-    <script>
-        var openFile = function(file) {
-            var input = file.target;
-            var reader = new FileReader();
-            reader.onload = function(){
-                var dataURL = reader.result;
-                var output = document.getElementById('output');
-                output.src = dataURL;
-            };
-            reader.readAsDataURL(input.files[0]);
-        };
-    </script>
-</head>
-<body>
+<!-- Include jquery and bootstrap -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
 
 <!-- Welcome Message -->
 <div class="container text-center">
@@ -62,33 +43,28 @@
     <br>
     <h1 class="my-2">Welcome to our demo!</h1>
 
-    <button onclick="document.getElementById('getFile').click()" class="my-2 clearfix border mx-auto">Upload</button>
+    <button onclick="document.getElementById('getFile').click()" class="my-2 clearfix mx-auto btn btn-primary" id='upload_button'>Upload</button> <button onclick='switchToCamera()' id='camera_button' class='btn btn-primary'>Camera</button>
     <input id='getFile' type='file' accept='image/*' onchange='openFile(event)' class="d-none"><br>
     <img id='output' class="mx-auto my-2 clearfix w-100">
 </div>
 
 <!-- Has all buttons and video screen -->
-<div class="container mt-5 container-webcam">
-    <h1 class="text-center mb-4">Webcam</h1>
+<div class="container text-align-center" id='cam_container' hidden>
+    <h2 class="text-center mb-4">Webcam</h2>
     <div class="row justify-content-center">
         <div class="col-md-6">
             <div class="card">
                 <div class="card-body text-center">
-                    <button id="startCamera" class="btn btn-primary btn-start-camera">Start Camera</button>
-                    <video id="video" width="100%" height="auto" style="display: none;"></video>
-                    <button id="takePicture" class="btn btn-success" style="display: none;">Take Picture</button>
-                    <canvas id="canvas" width="100%" height="auto" class="mt-3"></canvas>
+                    <button id="startCamera" class="btn btn-primary mx-auto clearfix">Start Camera</button>
+                    <video id="video" width="100%" height="auto" style="display: none;" class='clearfix'></video>
+                    <button id="takePicture" class="btn btn-success clearfix mx-auto my-2" style="display: none;">Take Picture</button>
+                    <canvas id="canvas" width="100%" height="auto" class="mt-3" hidden></canvas>
                     <img id="photo" alt="photo here" style="display: none; width: 100%;" class="mt-3">
                 </div>
             </div>
         </div>
     </div>
 </div>
-
-<!-- Include jquery and bootstrap -->
-<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
 <!-- Adds functionality to the buttons -->
 <script>
@@ -101,6 +77,7 @@
         const takePictureButton = document.getElementById('takePicture');
 
         startCameraButton.addEventListener('click', function () {
+            document.getElementById('canvas').hidden=false;
             startCamera();
         });
 
@@ -126,7 +103,6 @@
         function takePicture() {
             context.drawImage(video, 0, 0, canvas.width, canvas.height);
             photo.src = canvas.toDataURL('image/png');
-            photo.style.display = 'block';
         }
     });
 </script>
