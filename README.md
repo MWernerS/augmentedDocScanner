@@ -14,7 +14,7 @@ Bryce Sayre - Team Member
 Senior Computer Science Major in my last semester at EMU. I like to golf in the summer, and rock climb in the winter. I’m excited to graduate and use the skills I've accrued here at EMU to start a career in software development, and this project seems like a great last step before accomplishing that.
 
 Eric Eisele - Team Member
-Sample Bio Text
+I am a senior Computer Science major here are Eastern Michigan University.  I enjoy golfing when its warm enough, snowboarding when its cold enough, and coding in all weathers.  I am exciting to take the skills im learning here at EMU into the professional programming world.
 
 Gregory Auten - Team Member
 Senior Computer Science Major on his last semester at EMU. Love gaming, working out, and programming which I hope to apply the former two things with the latter for when I get work in the future.
