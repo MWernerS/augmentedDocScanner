@@ -1,9 +1,25 @@
-# augmentedDocScanner
+# The Augmented Document Scanner
 
+## Description
 The ADS will take an image or multiple images of paper with a qr code on them and turn them into a pdf file. Artists, teachers, and companies looking to digitize paper resources would use this program. To utilize, first take a picture of the paper you want to turn into a pdf. Then upload the image to the website and download the resulting pdf file. It is needed for uploading many pages at once instead of having to tediously upload pages one at a time while lining up the edges every time.
 
-Meet the Team
 
+## Project layout
+The ADS is using a MVC project layout. You can find the view as html files in the "view" folder. You can find the controller as js files in the "controller" folder. The ADS does not need a mode, but has a "model" folder in case we develop a need.
+
+## Setup details
+The ADS is designed to work in the latest version of any web browser. It is developed in pure HTML, CSS, and JavaScript. To clone your own version of the repository, simply clone the repo and launch the index.html file in your web browser. As long as you have an internet connection the ADS will function in this way.
+
+## Dependencies
+So far the ADS has the following dependencies, which are all linked and automatically imported at runtime:
+1. Bootstrap
+2. Popper.js
+3. JQuery
+
+
+
+
+## Meet the Team
 Michael Werner - Team Lead
 I am a 22 year old senior here at Eastern Michigan university. I took on team lead because I wanted a challenge, though I’m sure this class will be a challenge itself. I am looking to go into software development or follow my folks into IT management.
 
