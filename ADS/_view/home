@@ -12,19 +12,19 @@
     <link
       rel="apple-touch-icon"
       sizes="180x180"
-      href="https://cdn.discordapp.com/attachments/1194683240091484193/1198350298612236358/docScan.png?ex=65d10aaf&is=65be95af&hm=0fec95c2e759ae1bc0958dac771bbd1281e86135f34242549363ae750db0e081&"
+      href="./images/ads-high-resolution-logo.png"
     />
     <link
       rel="icon"
       type="image/png"
       sizes="32x32"
-      href="docScan.png"
+      href="./images/docScan.png"
     />
     <link
       rel="icon"
       type="image/png"
       sizes="16x16"
-      href="docScan.png"
+      href="./images/docScan.png"
     />
 
 
