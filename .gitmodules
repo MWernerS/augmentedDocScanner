@@ -1,0 +1,3 @@
+[submodule "ADS/controller/jsqrcode"]
+	path = ADS/controller/jsqrcode
+	url = https://github.com/LazarSoft/jsqrcode/
