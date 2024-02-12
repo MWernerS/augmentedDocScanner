@@ -1,120 +1,92 @@
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport">
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <title>Demo Page</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
-    <style>
-    </style>
-    <script>
-        var openFile = function(file) {
-            var input = file.target;
-            var reader = new FileReader();
-            reader.onload = function(){
-                var dataURL = reader.result;
-                var output = document.getElementById('output');
-                output.src = dataURL;
-            };
-            reader.readAsDataURL(input.files[0]);
-        };
-
-        function switchToCamera()
-        {
-            document.getElementById('upload_button').hidden=true;
-            document.getElementById('camera_button').hidden=true;
-            document.getElementById('output').hidden=true;
-            document.getElementById('cam_container').hidden=false;
-        }
-    </script>
-</head>
+<meta charset="UTF-8">
+<meta name="viewport">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>Demo Page</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+<style>
+section {
+  display: -webkit-flex;
+  display: flex;
+}
+</style>
 <body>
 
-<!-- Include jquery and bootstrap -->
-<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-
-
-<!-- Welcome Message -->
 <div class="container text-center">
-    <a href="about.html" class="top-0 float-end">About</a>
+  <a href="home.html" class="top-0 float-start">Home</a>
+  <a href="help.html" class="top-0 float-end">Help</a>
+  <br>
+  <h1 class="my-2">About the team</h1>
+  <p class='my-2'>Dummy team info</p>
+  <br>
+  <h1 class='my2'>About each of us</h1>
+</div>
+<section>
+  <div>
+    <img class='float-start mx-2' style="vertical-align:middle" src='https://i0.wp.com/vssmn.org/wp-content/uploads/2018/12/146-1468479_my-profile-icon-blank-profile-picture-circle-hd.png?fit=860%2C681&ssl=1' height=200 width=200>
+    <span class='float-start mx-2'> <b>Michael Werner</b></span>
     <br>
-    <h1 class="my-2">Welcome to our demo!</h1>
+      <p>Team Lead: I am a 22 year old senior here at Eastern Michigan university. 
+        I took on team lead because I wanted a challenge, though I’m sure this class will be a challenge itself. 
+        I am looking to go into software development or follow my folks into IT management.</p>
+  </div>  
+</section>
 
-    <button onclick="document.getElementById('getFile').click()" class="my-2 clearfix mx-auto btn btn-primary" id='upload_button'>Upload</button> <button onclick='switchToCamera()' id='camera_button' class='btn btn-primary'>Camera</button>
-    <input id='getFile' type='file' accept='image/*' onchange='openFile(event)' class="d-none"><br>
-    <img id='output' class="mx-auto my-2 clearfix w-100">
-</div>
+<section>
+  <div>
+    <img class='float-start mx-2' style="vertical-align:middle" src='https://i0.wp.com/vssmn.org/wp-content/uploads/2018/12/146-1468479_my-profile-icon-blank-profile-picture-circle-hd.png?fit=860%2C681&ssl=1' height=200 width=200>
+    <span class='float-start mx-2'> <b>Blake Eastman</b></span>
+    <br>
+      <p>Deputy Team Lead: I am a senior studying computer science at EMU. 
+        My hobbies include playing the Trombone in the marching band, writing code for personal projects, 
+        and watching the Lions win. Someday I would like to be a full time programmer. In the meantine, I do my best.</p>
+  </div>
+</section>
 
-<!-- Has all buttons and video screen -->
-<div class="container text-align-center" id='cam_container' hidden>
-    <h2 class="text-center mb-4">Webcam</h2>
-    <div class="row justify-content-center">
-        <div class="col-md-6">
-            <div class="card">
-                <div class="card-body text-center">
-                    <button id="startCamera" class="btn btn-primary mx-auto clearfix">Start Camera</button>
-                    <video id="video" width="100%" height="auto" style="display: none;" class='clearfix'></video>
-                    <button id="takePicture" class="btn btn-success clearfix mx-auto my-2" style="display: none;">Take Picture</button>
-                    <canvas id="canvas" width="100%" height="100%" class="border" hidden></canvas>
-                    <div id='photos'>
+<section>
+  <div>
+    <img class='float-start mx-2' style="vertical-align:middle" src='https://i0.wp.com/vssmn.org/wp-content/uploads/2018/12/146-1468479_my-profile-icon-blank-profile-picture-circle-hd.png?fit=860%2C681&ssl=1' height=200 width=200>
+    <span class='float-start mx-2'> <b>Bryce Sayre</b></span>
+    <br>
+      <p>Team Member: Senior Computer Science Major in my last semester at EMU. I like to golf in the summer, 
+        and rock climb in the winter. I’m excited to graduate and use the skills 
+        I've accrued here at EMU to start a career in software development, 
+        and this project seems like a great last step before accomplishing that.</p>
+  </div>
+</section>
 
-                    </div>
+<section>
+  <div>
+    <img class='float-start mx-2' style="vertical-align:middle" src='https://i0.wp.com/vssmn.org/wp-content/uploads/2018/12/146-1468479_my-profile-icon-blank-profile-picture-circle-hd.png?fit=860%2C681&ssl=1' height=200 width=200>
+    <span class='float-start mx-2'> <b>Eric Eisele</b></span>
+    <br>
+      <p>Team Member: Team Member I am a senior Computer Science major here are Eastern Michigan University. 
+        I enjoy golfing when its warm enough, snowboarding when its cold enough, and coding in all weathers. 
+        I am exciting to take the skills im learning here at EMU into the professional programming world.</p>
+  </div>  
+</section>
 
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
+<section>
+  <div>
+    <img class='float-start mx-2' style="vertical-align:middle" src='https://i0.wp.com/vssmn.org/wp-content/uploads/2018/12/146-1468479_my-profile-icon-blank-profile-picture-circle-hd.png?fit=860%2C681&ssl=1' height=200 width=200>
+    <span class='float-start mx-2'> <b>Gregory Auten</b></span>
+    <br>
+      <p>Team Member: Senior Computer Science Major on his last semester at EMU. Love gaming, working out, and 
+        programming which I hope to apply the former two things with the latter for when I get work in the future.</p>
+  </div>  
+</section>
 
-<!-- Adds functionality to the buttons -->
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const startCameraButton = document.getElementById('startCamera');
-        const video = document.getElementById('video');
-        const canvas = document.getElementById('canvas');
-        const context = canvas.getContext('2d');
-        const takePictureButton = document.getElementById('takePicture');
-        let photoNum=1;
-
-        startCameraButton.addEventListener('click', function () {
-            //document.getElementById('canvas').hidden=false;
-            startCamera();
-        });
-
-        takePictureButton.addEventListener('click', function () {
-            takePicture();
-        });
-
-        function startCamera() {
-            navigator.mediaDevices.getUserMedia({ video: true })
-                .then((stream) => {
-                    video.srcObject = stream;
-                    video.play();
-                    video.style.display = 'block';
-                    takePictureButton.style.display = 'block';
-                    //canvas.style.display = 'block';
-                    startCameraButton.style.display = 'none';
-                })
-                .catch((err) => {
-                    console.error("Error accessing webcam: ", err);
-                });
-        }
-
-        function takePicture() {
-            document.getElementById('photos').innerHTML += `<img id="photo${photoNum}" class="m-1">`;
-            let photo = document.getElementById('photo'+photoNum);
-
-            context.drawImage(video, 0, 0, canvas.width, canvas.height);
-            photo.src = canvas.toDataURL('image/png');
-
-            photoNum++;
-        }
-    });
-</script>
-
+<section>
+  <div>
+    <img class='float-start mx-2' style="vertical-align:middle" src='https://i0.wp.com/vssmn.org/wp-content/uploads/2018/12/146-1468479_my-profile-icon-blank-profile-picture-circle-hd.png?fit=860%2C681&ssl=1' height=200 width=200>
+    <span class='float-start mx-2'> <b>Michael Deaunee</b></span>
+    <br>
+      <p>Team Member Senior Computer Science Major on his second to last semester at EMU. 
+        I love basketball, videogames, and golfing. I have been learning code for roughly three years and 
+        I hope to challenge and utilize the skills i learned for this project.</p>
+  </div>  
+</section>
 </body>
 </html>
