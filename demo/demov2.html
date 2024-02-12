@@ -17,6 +17,8 @@
                 var dataURL = reader.result;
                 var output = document.getElementById('output');
                 output.src = dataURL;
+
+                detectAndAlertCode(reader.result);
             };
             reader.readAsDataURL(input.files[0]);
         };
@@ -38,24 +40,28 @@
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
 <!-- Controller and qr libraries -->
+<script type="text/javascript" src="../ADS/controller/jsqrcode/src/grid.js"></script>
+<script type="text/javascript" src="../ADS/controller/jsqrcode/src/version.js"></script>
+<script type="text/javascript" src="../ADS/controller/jsqrcode/src/detector.js"></script>
+<script type="text/javascript" src="../ADS/controller/jsqrcode/src/formatinf.js"></script>
+<script type="text/javascript" src="../ADS/controller/jsqrcode/src/errorlevel.js"></script>
+<script type="text/javascript" src="../ADS/controller/jsqrcode/src/bitmat.js"></script>
+<script type="text/javascript" src="../ADS/controller/jsqrcode/src/datablock.js"></script>
+<script type="text/javascript" src="../ADS/controller/jsqrcode/src/bmparser.js"></script>
+<script type="text/javascript" src="../ADS/controller/jsqrcode/src/datamask.js"></script>
+<script type="text/javascript" src="../ADS/controller/jsqrcode/src/rsdecoder.js"></script>
+<script type="text/javascript" src="../ADS/controller/jsqrcode/src/gf256poly.js"></script>
+<script type="text/javascript" src="../ADS/controller/jsqrcode/src/gf256.js"></script>
+<script type="text/javascript" src="../ADS/controller/jsqrcode/src/decoder.js"></script>
+<script type="text/javascript" src="../ADS/controller/jsqrcode/src/qrcode.js"></script>
+<script type="text/javascript" src="../ADS/controller/jsqrcode/src/findpat.js"></script>
+<script type="text/javascript" src="../ADS/controller/jsqrcode/src/alignpat.js"></script>
+<script type="text/javascript" src="../ADS/controller/jsqrcode/src/databr.js"></script>
 <script src="../ADS/controller/controller.js"></script>
-<script type="text/javascript" src="grid.js"></script>
-<script type="text/javascript" src="version.js"></script>
-<script type="text/javascript" src="detector.js"></script>
-<script type="text/javascript" src="formatinf.js"></script>
-<script type="text/javascript" src="errorlevel.js"></script>
-<script type="text/javascript" src="bitmat.js"></script>
-<script type="text/javascript" src="datablock.js"></script>
-<script type="text/javascript" src="bmparser.js"></script>
-<script type="text/javascript" src="datamask.js"></script>
-<script type="text/javascript" src="rsdecoder.js"></script>
-<script type="text/javascript" src="gf256poly.js"></script>
-<script type="text/javascript" src="gf256.js"></script>
-<script type="text/javascript" src="decoder.js"></script>
-<script type="text/javascript" src="qrcode.js"></script>
-<script type="text/javascript" src="findpat.js"></script>
-<script type="text/javascript" src="alignpat.js"></script>
-<script type="text/javascript" src="databr.js"></script>
+
+<script>
+
+</script>
 
 <!-- Welcome Message -->
 <div class="container text-center">
@@ -134,6 +140,7 @@
         }
     });
 </script>
+
 
 </body>
 </html>
