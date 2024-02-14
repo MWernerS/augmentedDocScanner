@@ -1,4 +1,4 @@
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -8,33 +8,43 @@
     <title>Demo Page</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
 
-<!--Adds app icon to our webapp  -->
-    <link
-      rel="apple-touch-icon"
-      sizes="180x180"
-      href="./images/ads-high-resolution-logo.png"
-    />
-    <link
-      rel="icon"
-      type="image/png"
-      sizes="32x32"
-      href="./images/docScan.png"
-    />
-    <link
-      rel="icon"
-      type="image/png"
-      sizes="16x16"
-      href="./images/docScan.png"
-    />
+    <!--Adds app icon to our webapp  -->
+    <link rel="apple-touch-icon"
+          sizes="180x180"
+          href="./images/ads-high-resolution-logo.png" />
+    <link rel="icon"
+          type="image/png"
+          sizes="32x32"
+          href="./images/docScan.png" />
+    <link rel="icon"
+          type="image/png"
+          sizes="16x16"
+          href="./images/docScan.png" />
 
 
     <style>
+        /* Add your custom styles here */
+        body {
+            padding-top: 80px; 
+            text-align: center;
+        }
+
+        .jumbotron {
+            background-color: #f8f9fa;
+            margin-top: 40px; 
+        }
+
+        .colored-navbar {
+            background-color: #6c757d; 
+        }
     </style>
+
+
     <script>
-        var openFile = function(file) {
+        var openFile = function (file) {
             var input = file.target;
             var reader = new FileReader();
-            reader.onload = function(){
+            reader.onload = function () {
                 var dataURL = reader.result;
                 var output = document.getElementById('output');
                 output.src = dataURL;
@@ -42,110 +52,145 @@
             reader.readAsDataURL(input.files[0]);
         };
 
-        function switchToCamera()
-        {
-            document.getElementById('upload_button').hidden=true;
-            document.getElementById('camera_button').hidden=true;
-            document.getElementById('output').hidden=true;
-            document.getElementById('cam_container').hidden=false;
+        function switchToCamera() {
+            document.getElementById('upload_button').hidden = true;
+            document.getElementById('camera_button').hidden = true;
+            document.getElementById('output').hidden = true;
+            document.getElementById('cam_container').hidden = false;
         }
     </script>
 </head>
 <body>
 
-<!-- Include jquery and bootstrap -->
-<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <!--- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top colored-navbar">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#"><img src="ads-corner.png" alt="Logo" style="height: 40px;"></a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="home.html">Home</a>
+                    </li> 
+                    <li class="nav-item">
+                        <a class="nav-link" href="about.html">About</a>
+                    </li> 
+                </ul>
+            </div>
+            <div class="position-absolute top-0 end-0 mt-2 me-3">
+                <a href="help.html">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-question-circle" viewBox="0 0 16 16">
+                        <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16" />
+                        <path d="M5.255 5.786a.237.237 0 0 0 .241.247h.825c.138 0 .248-.113.266-.25.09-.656.54-1.134 1.342-1.134.686 0 1.314.343 1.314 1.168 0 .635-.374.927-.965 1.371-.673.489-1.206 1.06-1.168 1.987l.003.217a.25.25 0 0 0 .25.246h.811a.25.25 0 0 0 .25-.25v-.105c0-.718.273-.927 1.01-1.486.609-.463 1.244-.977 1.244-2.056 0-1.511-1.276-2.241-2.673-2.241-1.267 0-2.655.59-2.75 2.286m1.557 5.763c0 .533.425.927 1.01.927.609 0 1.028-.394 1.028-.927 0-.552-.42-.94-1.029-.94-.584 0-1.009.388-1.009.94" />
+                    </svg>
+                </a>
+            </div>
+        </div>
+    </nav>
 
+    <!-- Include jquery and bootstrap -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
-<!-- Welcome Message -->
-<div class="container text-center">
-    <a href="about.html" class="top-0 float-end">About</a>
+    <div class="jumbotron">
+        <div class="container">
+            <h1 class="display-4">Welcome to Augmented Document Scanner</h1>
+            <p class="lead">Scan, digitize, and crop your documents!</p>
 
-    <div title="Help">
-        <a href="help.html" class="top-0 float-start">
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-question-circle" viewBox="0 0 16 16">
-                <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16" />
-                <path d="M5.255 5.786a.237.237 0 0 0 .241.247h.825c.138 0 .248-.113.266-.25.09-.656.54-1.134 1.342-1.134.686 0 1.314.343 1.314 1.168 0 .635-.374.927-.965 1.371-.673.489-1.206 1.06-1.168 1.987l.003.217a.25.25 0 0 0 .25.246h.811a.25.25 0 0 0 .25-.25v-.105c0-.718.273-.927 1.01-1.486.609-.463 1.244-.977 1.244-2.056 0-1.511-1.276-2.241-2.673-2.241-1.267 0-2.655.59-2.75 2.286m1.557 5.763c0 .533.425.927 1.01.927.609 0 1.028-.394 1.028-.927 0-.552-.42-.94-1.029-.94-.584 0-1.009.388-1.009.94" />
-            </svg>
-        </a>
+        </div>
     </div>
 
-    <br>
-    <h1 class="my-2">Welcome to our demo!</h1>
 
-    <button onclick="document.getElementById('getFile').click()" class="my-2 clearfix mx-auto btn btn-primary" id='upload_button'>Upload</button> <button onclick='switchToCamera()' id='camera_button' class='btn btn-primary'>Camera</button>
-    <input id='getFile' type='file' accept='image/*' onchange='openFile(event)' class="d-none"><br>
-    <img id='output' class="mx-auto my-2 clearfix w-100">
-</div>
+    <!-- Welcome Message -->
+    <div class="container text-center">
+        <br>
+        <button onclick="document.getElementById('getFile').click()" class="my-2 clearfix mx-auto btn btn-primary" id='upload_button'>
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-upload" viewBox="0 0 16 16">
+                <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5" />
+                <path d="M7.646 1.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1-.708.708L8.5 2.707V11.5a.5.5 0 0 1-1 0V2.707L5.354 4.854a.5.5 0 1 1-.708-.708z" />
+            </svg>
 
-<!-- Has all buttons and video screen -->
-<div class="container text-align-center" id='cam_container' hidden>
-    <h2 class="text-center mb-4">Webcam</h2>
-    <div class="row justify-content-center">
-        <div class="col-md-6">
-            <div class="card">
-                <div class="card-body text-center">
-                    <button id="startCamera" class="btn btn-primary mx-auto clearfix">Start Camera</button>
-                    <video id="video" width="100%" height="auto" style="display: none;" class='clearfix'></video>
-                    <button id="takePicture" class="btn btn-success clearfix mx-auto my-2" style="display: none;">Take Picture</button>
-                    <canvas id="canvas" width="100%" height="100%" class="border" hidden></canvas>
-                    <div id='photos'>
+            <b>UPLOAD FILES</b>
+        </button> <button onclick='switchToCamera()' id='camera_button' class='btn btn-primary'>
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-camera" viewBox="0 0 16 16">
+                <path d="M15 12a1 1 0 0 1-1 1H2a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1h1.172a3 3 0 0 0 2.12-.879l.83-.828A1 1 0 0 1 6.827 3h2.344a1 1 0 0 1 .707.293l.828.828A3 3 0 0 0 12.828 5H14a1 1 0 0 1 1 1zM2 4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2h-1.172a2 2 0 0 1-1.414-.586l-.828-.828A2 2 0 0 0 9.172 2H6.828a2 2 0 0 0-1.414.586l-.828.828A2 2 0 0 1 3.172 4z" />
+                <path d="M8 11a2.5 2.5 0 1 1 0-5 2.5 2.5 0 0 1 0 5m0 1a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7M3 6.5a.5.5 0 1 1-1 0 .5.5 0 0 1 1 0" />
+            </svg>
+            <b>CAMERA</b>
+        </button>
+        <input id='getFile' type='file' accept='image/*' onchange='openFile(event)' class="d-none"><br>
+        <img id='output' class="mx-auto my-2 clearfix w-10">
+    </div>
+
+    <!-- Has all buttons and video screen -->
+    <div class="container text-align-center" id='cam_container' hidden>
+        <h2 class="text-center mb-4">Webcam</h2>
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-body text-center">
+                        <button id="startCamera" class="btn btn-primary mx-auto clearfix">Start Camera</button>
+                        <video id="video" width="100%" height="auto" style="display: none;" class='clearfix'></video>
+                        <button id="takePicture" class="btn btn-success clearfix mx-auto my-2" style="display: none;">Take Picture</button>
+                        <canvas id="canvas" width="100%" height="100%" class="border" hidden></canvas>
+                        <div id='photos'>
+
+                        </div>
 
                     </div>
-
                 </div>
             </div>
         </div>
     </div>
-</div>
 
-<!-- Adds functionality to the buttons -->
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const startCameraButton = document.getElementById('startCamera');
-        const video = document.getElementById('video');
-        const canvas = document.getElementById('canvas');
-        const context = canvas.getContext('2d');
-        const takePictureButton = document.getElementById('takePicture');
-        let photoNum=1;
+    <!-- Adds functionality to the buttons -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const startCameraButton = document.getElementById('startCamera');
+            const video = document.getElementById('video');
+            const canvas = document.getElementById('canvas');
+            const context = canvas.getContext('2d');
+            const takePictureButton = document.getElementById('takePicture');
+            let photoNum = 1;
 
-        startCameraButton.addEventListener('click', function () {
-            //document.getElementById('canvas').hidden=false;
-            startCamera();
+            startCameraButton.addEventListener('click', function () {
+                //document.getElementById('canvas').hidden=false;
+                startCamera();
+            });
+
+            takePictureButton.addEventListener('click', function () {
+                takePicture();
+            });
+
+            function startCamera() {
+                navigator.mediaDevices.getUserMedia({ video: true })
+                    .then((stream) => {
+                        video.srcObject = stream;
+                        video.play();
+                        video.style.display = 'block';
+                        takePictureButton.style.display = 'block';
+                        //canvas.style.display = 'block';
+                        startCameraButton.style.display = 'none';
+                    })
+                    .catch((err) => {
+                        console.error("Error accessing webcam: ", err);
+                    });
+            }
+
+            function takePicture() {
+                document.getElementById('photos').innerHTML += `<img id="photo${photoNum}" class="m-1">`;
+                let photo = document.getElementById('photo' + photoNum);
+
+                context.drawImage(video, 0, 0, canvas.width, canvas.height);
+                photo.src = canvas.toDataURL('image/png');
+
+                photoNum++;
+            }
         });
-
-        takePictureButton.addEventListener('click', function () {
-            takePicture();
-        });
-
-        function startCamera() {
-            navigator.mediaDevices.getUserMedia({ video: true })
-                .then((stream) => {
-                    video.srcObject = stream;
-                    video.play();
-                    video.style.display = 'block';
-                    takePictureButton.style.display = 'block';
-                    //canvas.style.display = 'block';
-                    startCameraButton.style.display = 'none';
-                })
-                .catch((err) => {
-                    console.error("Error accessing webcam: ", err);
-                });
-        }
-
-        function takePicture() {
-            document.getElementById('photos').innerHTML += `<img id="photo${photoNum}" class="m-1">`;
-            let photo = document.getElementById('photo'+photoNum);
-
-            context.drawImage(video, 0, 0, canvas.width, canvas.height);
-            photo.src = canvas.toDataURL('image/png');
-
-            photoNum++;
-        }
-    });
-</script>
+    </script>
 
 </body>
 </html>
