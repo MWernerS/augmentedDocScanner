@@ -146,6 +146,13 @@
         </div>
     </div>
 
+
+ <!-- Generate PDF Button -->
+    <div class="container text-center">
+        <button onclick="generatePDF()" class="btn btn-primary">Generate PDF</button>
+    </div>
+
+
     <!-- Adds functionality to the buttons -->
     <script>
         document.addEventListener('DOMContentLoaded', function () {
@@ -179,6 +186,13 @@
                         console.error("Error accessing webcam: ", err);
                     });
             }
+
+	        function generatePDF() {
+                // Add your PDF generation logic here
+                alert("PDF generation logic goes here!");
+            }
+
+
 
             function takePicture() {
                 document.getElementById('photos').innerHTML += `<img id="photo${photoNum}" class="m-1">`;
