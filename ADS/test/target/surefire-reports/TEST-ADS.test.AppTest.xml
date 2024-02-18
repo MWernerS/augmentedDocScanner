@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report.xsd" name="ADS.test.AppTest" time="0.027" tests="1" errors="0" skipped="0" failures="0">
+<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report.xsd" name="ADS.test.AppTest" time="0.024" tests="1" errors="0" skipped="0" failures="0">
   <properties>
     <property name="java.specification.version" value="17"/>
     <property name="sun.jnu.encoding" value="UTF-8"/>
@@ -12,7 +12,7 @@
     <property name="sun.java.launcher" value="SUN_STANDARD"/>
     <property name="user.country" value="US"/>
     <property name="sun.boot.library.path" value="/usr/lib/jvm/java-17-openjdk-17.0.9.0.9-3.fc39.x86_64/lib"/>
-    <property name="sun.java.command" value="/home/blake/Documents/School/Senior 2/COSC 481W/augmentedDocScanner/ADS/test/target/surefire/surefirebooter14519651682869323821.jar /home/blake/Documents/School/Senior 2/COSC 481W/augmentedDocScanner/ADS/test/target/surefire 2024-02-14T12-16-12_173-jvmRun1 surefire16900849951038910972tmp surefire_03101573461830301533tmp"/>
+    <property name="sun.java.command" value="/home/blake/Documents/School/Senior 2/COSC 481W/augmentedDocScanner/ADS/test/target/surefire/surefirebooter3973899903162716490.jar /home/blake/Documents/School/Senior 2/COSC 481W/augmentedDocScanner/ADS/test/target/surefire 2024-02-18T14-30-37_588-jvmRun1 surefire1432348790075109485tmp surefire_018112245064774254462tmp"/>
     <property name="jdk.debug" value="release"/>
     <property name="surefire.test.class.path" value="/home/blake/Documents/School/Senior 2/COSC 481W/augmentedDocScanner/ADS/test/target/test-classes:/home/blake/Documents/School/Senior 2/COSC 481W/augmentedDocScanner/ADS/test/target/classes:/home/blake/.m2/repository/junit/junit/4.11/junit-4.11.jar:/home/blake/.m2/repository/org/hamcrest/hamcrest-core/1.3/hamcrest-core-1.3.jar:/home/blake/.m2/repository/com/microsoft/playwright/playwright/1.41.0/playwright-1.41.0.jar:/home/blake/.m2/repository/com/google/code/gson/gson/2.8.9/gson-2.8.9.jar:/home/blake/.m2/repository/org/opentest4j/opentest4j/1.2.0/opentest4j-1.2.0.jar:/home/blake/.m2/repository/com/microsoft/playwright/driver/1.41.0/driver-1.41.0.jar:/home/blake/.m2/repository/com/microsoft/playwright/driver-bundle/1.41.0/driver-bundle-1.41.0.jar:"/>
     <property name="sun.cpu.endian" value="little"/>
@@ -27,7 +27,7 @@
     <property name="line.separator" value="&#10;"/>
     <property name="java.vm.specification.vendor" value="Oracle Corporation"/>
     <property name="java.specification.name" value="Java Platform API Specification"/>
-    <property name="surefire.real.class.path" value="/home/blake/Documents/School/Senior 2/COSC 481W/augmentedDocScanner/ADS/test/target/surefire/surefirebooter14519651682869323821.jar"/>
+    <property name="surefire.real.class.path" value="/home/blake/Documents/School/Senior 2/COSC 481W/augmentedDocScanner/ADS/test/target/surefire/surefirebooter3973899903162716490.jar"/>
     <property name="sun.management.compiler" value="HotSpot 64-Bit Tiered Compilers"/>
     <property name="java.runtime.version" value="17.0.9+9"/>
     <property name="user.name" value="blake"/>
@@ -52,5 +52,5 @@
     <property name="sun.io.unicode.encoding" value="UnicodeLittle"/>
     <property name="java.class.version" value="61.0"/>
   </properties>
-  <testcase name="shouldAnswerWithTrue" classname="ADS.test.AppTest" time="0.001"/>
+  <testcase name="shouldAnswerWithTrue" classname="ADS.test.AppTest" time="0.002"/>
 </testsuite>
