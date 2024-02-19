@@ -4,6 +4,7 @@ import com.microsoft.playwright.*;
 import java.nio.file.Paths;
 import java.lang.Thread;
 import static com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat;
+import java.io.File;
 
 public class QRTest {
 
@@ -15,8 +16,11 @@ public class QRTest {
             Browser browser = playwright.firefox().launch(new BrowserType.LaunchOptions().setHeadless(headless));
             Page page = browser.newPage();
 
-            page.navigate("file:///home/blake/Documents/School/Senior%202/COSC%20481W/augmentedDocScanner/ADS/view/home.html");
-            page.getByTestId("fileupload").setInputFiles(Paths.get("/home/blake/Documents/School/Senior 2/COSC 481W/augmentedDocScanner/ADS/test/qr1.png"));
+            File html = new File("../view/home.html");
+            File qrpng = new File("qr1.png");
+
+            page.navigate(html.getCanonicalPath());
+            page.getByTestId("fileupload").setInputFiles(Paths.get(qrpng.getCanonicalPath()));
             assertThat(page.getByTestId("qrresult")).hasText("QR point coordinates: (94, 206), (94, 134), (166, 134)");
         }
     }
