@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PDF Printer</title>
+    <!--CSS links-->
+    <link rel="stylesheet" href="styles.css">
+    <!--scripts-->
+    <script src="https://unpkg.com/pdf-lib@1.4.0"></script>
+    <script src="https://unpkg.com/downloadjs@1.4.7"></script>
+</head>
+<body>
+	<div class="container text-center">
+		<a href="home.html" class="top-0 float-start">Home</a>
+	</div>
+    <div class="container text-center">
+        <p>Qr code to be printed onto the pdf file:</p>
+        <img src="data:image/png;base64,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" alt="A QR Code">
+        <p>Click the button to create a new PDF document as your template to print.</p>
+        <button onclick="createPdf()">Create PDF</button>
+        <p class="small">(Your browser will download the resulting file)</p>
+    </div>
+</body>
+<script>
+    //PDF file creation
+    const { PDFDocument, StandardFonts, rgb } = PDFLib
+    async function createPdf() {
+        // Create a new PDFDocument
+        const pdfDoc = await PDFDocument.create()
+
+        // Embed the Times Roman font
+        const timesRomanFont = await pdfDoc.embedFont(StandardFonts.TimesRoman)
+
+        // Add a blank page to the document
+        const page = pdfDoc.addPage()
+
+        // Get the width and height of the page
+        const { width, height } = page.getSize()
+
+        //qr image
+        const pngImageBytes = "data:image/png;base64,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"
+        const pngImage = await pdfDoc.embedPng(pngImageBytes)
+        const pngDims = pngImage.scale(1)
+
+        page.drawImage(pngImage, {
+            x: page.getWidth() * .75,
+            y: page.getHeight() * .05, // - pngDims.height,
+            width: pngDims.width,
+            height: pngDims.height,
+        })
+
+        // Serialize the PDFDocument to bytes (a Uint8Array)
+        const pdfBytes = await pdfDoc.save()
+
+	    // Trigger the browser to download the PDF document
+        download(pdfBytes, "ADSTemplate.pdf", "application/pdf");
+    }
+</script>
+</html>
+

@@ -264,3 +264,7 @@ $RECYCLE.BIN/
 
 # Windows shortcuts
 *.lnk
+
+
+#maven builds
+ADS/test/target/
