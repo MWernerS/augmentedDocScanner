@@ -61,8 +61,13 @@
                 var dataURL = reader.result;
                 var output = document.createElement('img');
                 output.src = dataURL;
+
                 output.className = 'mx-auto my-2 clearfix w-10';
                 document.getElementById('uploadedImages').appendChild(output);
+                detectAndAlertCode(reader.result);
+            };
+            reader.onerror = function(error) {
+                console.log('Error: ', error);
             };
             reader.readAsDataURL(input.files[0]);
         };
@@ -75,9 +80,35 @@
         }
 
     </script>
+
 </head>
 <body>
 
+<!-- Include jquery and bootstrap -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+<!-- Controller and qr libraries -->
+<script type="text/javascript" src="../controller/jsqrcode/src/grid.js"></script>
+<script type="text/javascript" src="../controller/jsqrcode/src/version.js"></script>
+<script type="text/javascript" src="../controller/jsqrcode/src/detector.js"></script>
+<script type="text/javascript" src="../controller/jsqrcode/src/formatinf.js"></script>
+<script type="text/javascript" src="../controller/jsqrcode/src/errorlevel.js"></script>
+<script type="text/javascript" src="../controller/jsqrcode/src/bitmat.js"></script>
+<script type="text/javascript" src="../controller/jsqrcode/src/datablock.js"></script>
+<script type="text/javascript" src="../controller/jsqrcode/src/bmparser.js"></script>
+<script type="text/javascript" src="../controller/jsqrcode/src/datamask.js"></script>
+<script type="text/javascript" src="../controller/jsqrcode/src/rsdecoder.js"></script>
+<script type="text/javascript" src="../controller/jsqrcode/src/gf256poly.js"></script>
+<script type="text/javascript" src="../controller/jsqrcode/src/gf256.js"></script>
+<script type="text/javascript" src="../controller/jsqrcode/src/decoder.js"></script>
+<script type="text/javascript" src="../controller/jsqrcode/src/qrcode.js"></script>
+<script type="text/javascript" src="../controller/jsqrcode/src/findpat.js"></script>
+<script type="text/javascript" src="../controller/jsqrcode/src/alignpat.js"></script>
+<script type="text/javascript" src="../controller/jsqrcode/src/databr.js"></script>
+<script src="../controller/controller.js"></script>
+  
     <!--- Navigation Bar -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top colored-navbar">
         <div class="container-fluid">
@@ -106,10 +137,6 @@
         </div>
     </nav>
 
-    <!-- Include jquery and bootstrap -->
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
     <div class="jumbotron">
         <div class="container">
@@ -137,7 +164,8 @@
             </svg>
             <b>CAMERA</b>
         </button>
-        <input id='getFile' type='file' accept='image/*' onchange='openFile(event)' class="d-none"><br>
+        <input data-testid='fileupload' id='getFile' type='file' accept='image/*' onchange='openFile(event)' class="d-none"><br>
+        <p id='qrresult' data-testid='qrresult' class='mx-auto my-2 clearfix w-100'></p>
         <img id='output' class="mx-auto my-2 clearfix w-10">
         <div id="uploadedImages" class="border border-dark px-0 d-none"></div>
     </div>
