@@ -19,9 +19,12 @@ public class QRTest {
             File html = new File("../view/home.html");
             File qrpng = new File("qr1.png");
 
-            page.navigate(html.getCanonicalPath());
+            page.navigate("file://"+html.getCanonicalPath());
             page.getByTestId("fileupload").setInputFiles(Paths.get(qrpng.getCanonicalPath()));
             assertThat(page.getByTestId("qrresult")).hasText("QR point coordinates: (94, 206), (94, 134), (166, 134)");
+        } catch (Exception e)
+        {
+            e.printStackTrace();
         }
     }
 }
