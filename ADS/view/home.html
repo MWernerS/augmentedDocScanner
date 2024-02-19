@@ -11,11 +11,9 @@
     </style>
     <script>
         var openFile = function(file) {
-            console.log("File uploaded");
             var input = file.target;
             var reader = new FileReader();
             reader.onload = function(){
-                console.log("file read")
                 var dataURL = reader.result;
                 var output = document.getElementById('output');
                 output.src = dataURL;
@@ -26,7 +24,6 @@
                 console.log('Error: ', error);
             };
             reader.readAsDataURL(input.files[0]);
-            reader.onload();
         };
 
         function switchToCamera()
@@ -74,6 +71,7 @@
 
     <button onclick="document.getElementById('getFile').click()" class="my-2 clearfix mx-auto btn btn-primary" id='upload_button'>Upload</button> <button onclick='switchToCamera()' id='camera_button' class='btn btn-primary'>Camera</button>
     <input data-testid="fileupload" id='getFile' type='file' accept='image/*' onchange='openFile(event)' class="d-none"><br>
+    <p id='qrresult' data-testid='qrresult' class='mx-auto my-2 clearfix w-100'></p>
     <img id='output' class="mx-auto my-2 clearfix w-100">
 </div>
 
