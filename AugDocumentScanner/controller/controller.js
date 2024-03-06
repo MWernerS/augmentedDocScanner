@@ -35,3 +35,23 @@ function qrCoordsToPage(qr)
     qrresultElement.innerHTML = `QR point coordinates: (${points[0].x}, ${points[0].y}), (${points[1].x}, ${points[1].y}), (${points[2].x}, ${points[2].y})`
   }
 }
+
+function generatePdfEvent(images)
+{
+
+}
+
+function crop(images)
+{
+
+}
+
+function generatePDF(images)
+{
+
+}
+
+function downloadPDF(pdf)
+{
+
+}
