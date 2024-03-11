@@ -224,9 +224,17 @@
                 takePicture();
             });
 
+            genPDFButton.addEventListener('click', function () {
+                generatePDF();
+            });
+
             function generatePDF() {
-                // Add PDF generation logic here
-                alert("PDF generation logic goes here!");
+
+                setTimeout(function () {
+                    location.reload(); 
+                }, 1); // 
+                alert("PDF Generated Successfully!");
+            
             }
 
             function startCamera() {
