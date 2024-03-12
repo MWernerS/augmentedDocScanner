@@ -63,6 +63,8 @@
                 output.src = dataURL;
 
                 output.className = 'mx-auto my-2 clearfix w-10';
+                output.style.border = '1px solid black'; // Border style
+                
                 document.getElementById('uploadedImages').appendChild(output);
                 detectAndAlertCode(reader.result);
             };
