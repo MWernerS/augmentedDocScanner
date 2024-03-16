@@ -44,8 +44,6 @@ function generatePdfEvent(images)
 
 function crop(images)
 {
-  let remaining = [images.length];
-
   function cropCallback(encoded)
   {
     const params = encoded.split('?')[1].split('&');
@@ -66,20 +64,72 @@ function crop(images)
       tokenParams["qy"] = .5;
     }
 
-    let detective = new Detector(qrcode.grayScaleToBitmap(qrcode.grayscale()));
+    let detective = new Detector(qrcode.grayScaleToBitmap(qrcode.grayscale())).detect();
     let qrWidthInBits = detective.bits.Height+4;
     let qrPoint0, qrPoint1;
     let qrWidthInPixels = ((qrPoint1 - qrPoint0)/(qrWidthInBits-10)*(qrWidthInBits));
     let pixelsPerInch = qrWidthInPixels/tokenParams["qw"];
     let inchesPerPixel = tokenParams["qw"]/qrWidthInPixels;
+    let qrVertXDiff = detective.points[1].x - detective.points[0].x;
+    let qrVertYDiff = detective.points[1].y - detective.points[0].y;
+    let qrHorXDiff = detective.points[2].x - detective.points[1].x;
+    let qrHorYDiff = detective.points[2].y - detective.points[1].y;
+
+
+    let canvas = document.createElement('canvas');
+    canvas.hidden = true;
+    let context = canvas.getContext('2d');
+
+
+    //calculate scaling
+    let scaleForX = qrVertYDiff / qrHorXDiff;
     
+
+    //calculate skew
+    let horizontalSkew = 0;
+    if(qrHorYDiff != 0)
+      horizontalSkew = qrHorXDiff / qrHorYDiff;
+
+    let verticalSkew = 0;
+    if(qrVertXDiff != 0)
+      verticalSkew = qrVertYDiff / qrVertXDiff;
+
+
+    //cropped image size (height, width)
+    let newHeight = tokenParams['l'] * pixelsPerInch;
+    let newWidth = tokenParams['w'] * pixelsPerInch;
+
+    //cropped image displacement 
+    let pageTopPixel = ;
+    let pageLeftPixel;
+
+    //set transform
+    //set the canvas size
+    //draw image with displacement
+    context.drawImage(image[0], 0, 0);
+
+    //export canvas
+    let thisCroppedImage = new Image();
+    thisCroppedImage.src = context.toDataURL();
+    outputImages.push(thisCroppedImage);
+
+    images = images.slice(1);
+    if(images.length == 0)
+      return outputImages;
+
+    //do something with image
   }
 
   qrcode.callback=cropCallback;
-  for(let i=0; i<images.length;i++){
+}
 
-  }
+function deskew(image, detective)
+{
 
+
+
+  
+  context.drawImage(image);
 }
 
 function tokenize(l, separator){
