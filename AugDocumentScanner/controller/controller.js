@@ -41,19 +41,20 @@ function generatePdfEvent(images)
 {
   let cropResults = crop(images);
   let pdf = generatePDF(cropResults.croppedImages, cropResults.pageSize);
-  downloadPDF(pdf);  let cropResults = crop(images);
-  let pdf = generatePDF(cropResults.croppedImages, cropResults.pageSize);
   downloadPDF(pdf);
 }
 
-function crop(images)
+async function crop(images)
 {
   let isDone = [false];
   let outputImages = [];
   let pageSize = {};
   function cropCallback(encoded)
   {
-    const params = encoded.split('?')[1].split('&');
+    let params=[];
+    if(encoded.includes("?"))
+      params = encoded.split('?')[1].split('&');
+
     let tokenParams = tokenize(params, "=");
     if(tokenParams["w"] == undefined){
       tokenParams["w"] = 8.5;
@@ -112,11 +113,11 @@ function crop(images)
     let newWidth = tokenParams['w'] * pixelsPerInch;
 
     //cropped image displacement 
-    let pageTopPixel = detective.points[0].y - (tokenParams['l'] - tokeParams['qy'] - qrPixelMargin);
+    let pageTopPixel = detective.points[0].y - (tokenParams['l'] - tokenParams['qy'] - qrPixelMargin);
     let pageLeftPixel = detective.points[0].x - (tokenParams['w'] - tokenParams['qx'] - qrPixelMargin);
 
     //set transform
-    canvas.setTransform(scaleForX, horizontalSkew, verticalSkew, scaleForY, pageLeftPixel, pageTopPixel);
+    context.setTransform(scaleForX, horizontalSkew, verticalSkew, scaleForY, pageLeftPixel, pageTopPixel);
 
     //set the canvas size
     canvas.width = tokenParams['w'] * pixelsPerInch;
