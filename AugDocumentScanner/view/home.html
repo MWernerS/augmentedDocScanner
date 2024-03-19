@@ -84,6 +84,9 @@
     <script>
         var imageCounter = 0; // Global counter
 
+        //array to contain imageBytes of all uplaoded images (to be used for generating PDF)
+        const preprocessed = [];
+
         var openFile = function (file) {
             $('#generatePDFbutton').removeClass('d-none');
             $('#uploadedImages').removeClass('d-none');
@@ -91,10 +94,13 @@
             var reader = new FileReader();
             reader.onload = function () {
                 var dataURL = reader.result;
+                preprocessed.push(output);
                 var output = document.createElement('div');
                 output.className = 'image-container';
                 var image = document.createElement('img');
                 image.src = dataURL;
+
+                
                 image.className = 'mx-auto my-2 clearfix w-10';
                 image.style.border = '1px solid black'; // Border style
 
@@ -142,10 +148,14 @@
 </head>
 <body>
 
-    <!-- Include jquery and bootstrap -->
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<!-- Include jquery and bootstrap -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+<!-- pdf library import -->
+<script src="https://unpkg.com/pdf-lib@1.4.0"></script>
+<script src="https://unpkg.com/downloadjs@1.4.7"></script>
 
     <!-- Controller and qr libraries -->
     <script type="text/javascript" src="../controller/jsqrcode/src/grid.js"></script>
@@ -254,7 +264,7 @@
 
     <!-- Generate PDF Button -->
     <div class="container text-center mt-2 mb-2">
-        <button onclick="generatePDF()" class="btn btn-primary d-none pt-2 pb-2" id="generatePDFbutton">
+        <button onclick="generatePdfEvent(preprocessed)" class="btn btn-primary d-none pt-2 pb-2" id="generatePDFbutton">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-file-earmark-arrow-down" viewBox="0 0 16 16">
                 <path d="M8.5 6.5a.5.5 0 0 0-1 0v3.793L6.354 9.146a.5.5 0 1 0-.708.708l2 2a.5.5 0 0 0 .708 0l2-2a.5.5 0 0 0-.708-.708L8.5 10.293z" />
                 <path d="M14 14V4.5L9.5 0H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2M9.5 3A1.5 1.5 0 0 0 11 4.5h2V14a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h5.5z" />
@@ -284,19 +294,7 @@
                 takePicture();
             });
 
-            genPDFButton.addEventListener('click', function () {
-                generatePDF();
-            });
-
-            function generatePDF() {
-
-                setTimeout(function () {
-                    location.reload();
-                }, 1); //
-                alert("PDF Generated Successfully!");
-
-            }
-
+            
             function startCamera() {
 
                 navigator.mediaDevices.getUserMedia({ video: true })
@@ -348,7 +346,7 @@
 
                 // Set the source of the image to the canvas content
                 photo.src = canvas.toDataURL('image/png');
-
+                preprocessed.push(photo);
                 // Increment the photoNum for the next image
                 photoNum++;
             }
