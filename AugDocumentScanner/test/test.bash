@@ -1,1 +1,1 @@
-mvn compile exec:java -D exec.mainClass="ADS.test.QRTest"
+mvn compile exec:java -D exec.mainClass="ADS.test.Tests"
