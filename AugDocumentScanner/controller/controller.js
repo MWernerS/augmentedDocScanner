@@ -25,23 +25,21 @@ function detectAndAlertCode(img) {
 }
 
 function qrCoordsToPage(qr) {
-  console.log(qr);
   let qrresultElement = document.getElementById('qrresult');
   if (qr == undefined) {
     qrresultElement.innerHTML = "";
   }
   else {
-    let points = qr.points;
-    console.log(qr.bits);
-    qrresultElement.innerHTML = `QR point coordinates: (${points[0].x}, ${points[0].y}), (${points[1].x}, ${points[1].y}), (${points[2].x}, ${points[2].y})`
+    let points = qr.points;    qrresultElement.innerHTML = `QR point coordinates: (${points[0].x}, ${points[0].y}), (${points[1].x}, ${points[1].y}), (${points[2].x}, ${points[2].y})`
   }
 }
 const { PDFDocument, StandardFonts, rgb } = PDFLib
-function generatePdfEvent(images)
+
+async function generatePdfEvent(images)
 {
   let cropResults = crop(images);
-  let pdf = generatePDF(cropResults.croppedImages, cropResults.pageSize);
-  downloadPDF(pdf);
+  //let pdf = generatePDF(cropResults.croppedImages, cropResults.pageSize);
+  //downloadPDF(pdf);
 }
 
 async function crop(images)
@@ -55,6 +53,7 @@ async function crop(images)
     if(encoded.includes("?"))
       params = encoded.split('?')[1].split('&');
 
+    console.log("params: " +params)
     let tokenParams = tokenize(params, "=");
     if(tokenParams["w"] == undefined){
       tokenParams["w"] = 8.5;
@@ -76,87 +75,107 @@ async function crop(images)
 
     let detective = new Detector(qrcode.grayScaleToBitmap(qrcode.grayscale())).detect();
     let qrWidthInBits = detective.bits.Height+4;
-    let qrPoint0 = detective.points[0].x;
-    let qrPoint1 = detective.points[1].x;
-    let qrPixelMargin = (qrPoint1 - qrPoint0) / 2;
-    let qrWidthInPixels = ((qrPoint1 - qrPoint0)/(qrWidthInBits-10)*(qrWidthInBits));
+    let qrPoint0y = detective.points[0].y;
+    let qrPoint1y = detective.points[1].y;
+    let qrPoint0x = detective.points[0].x;
+    let qrPoint1x = detective.points[1].x;
+    let qrWidthInPixels = Math.sqrt(Math.abs(qrPoint1y - qrPoint0y)**2 + Math.abs(qrPoint1x - qrPoint0x)**2)/(qrWidthInBits-11)*(qrWidthInBits);
+    let qrPixelMargin = 5.5/qrWidthInBits * qrWidthInPixels;
     let pixelsPerInch = qrWidthInPixels/tokenParams["qw"];
     let inchesPerPixel = tokenParams["qw"]/qrWidthInPixels;
     let qrVertXDiff = detective.points[1].x - detective.points[0].x;
     let qrVertYDiff = detective.points[1].y - detective.points[0].y;
+    let qrVertDiff = Math.sqrt(qrVertXDiff**2 + qrVertYDiff**2);
     let qrHorXDiff = detective.points[2].x - detective.points[1].x;
     let qrHorYDiff = detective.points[2].y - detective.points[1].y;
+    let qrHorDiff = Math.sqrt(qrHorXDiff**2 + qrHorYDiff**2);
 
 
     let canvas = document.createElement('canvas');
     canvas.hidden = true;
+    canvas.height = tokenParams['l'] * pixelsPerInch;
+    canvas.width = tokenParams['w'] * pixelsPerInch;
     let context = canvas.getContext('2d');
 
+    console.log('qrwidthinbits: '+qrWidthInBits)
+    console.log('qrwidthinpixels: '+ qrWidthInPixels)
+    console.log('qrpixelmargin: '+qrPixelMargin)
+    console.log('pixelsPerInch: '+pixelsPerInch)
 
     //calculate scaling
     let scaleForY = 1;
-    let scaleForX = qrVertYDiff / qrHorXDiff;
-    
+    let scaleForX = qrVertDiff / qrHorDiff;
+    console.log('scaleforx: '+scaleForX)
 
+    
     //calculate skew
     let horizontalSkew = 0;
     if(qrHorYDiff != 0)
-      horizontalSkew = qrHorXDiff / qrHorYDiff;
+      //horizontalSkew = qrHorXDiff / qrHorYDiff;
+      horizontalSkew = -1 * qrHorYDiff / qrHorXDiff;
+    console.log('horizontalskew: '+horizontalSkew)
 
     let verticalSkew = 0;
     if(qrVertXDiff != 0)
-      verticalSkew = qrVertYDiff / qrVertXDiff;
-
+      //verticalSkew = qrVertYDiff / qrVertXDiff;
+      verticalSkew = -1 * qrVertXDiff / qrVertYDiff;
+    console.log('verticalskew: '+verticalSkew)
+    
 
     //cropped image size (height, width)
     let newHeight = tokenParams['l'] * pixelsPerInch;
     let newWidth = tokenParams['w'] * pixelsPerInch;
+    console.log(`newheight formula: ${tokenParams['l']} * ${pixelsPerInch}`)
+    console.log(`newwidth formula: ${tokenParams['w']} * ${pixelsPerInch}`)
+    console.log('newheight: '+newHeight)
+    console.log('newwidth: '+newWidth)
 
-    //cropped image displacement 
-    let pageTopPixel = detective.points[0].y - (tokenParams['l'] - tokenParams['qy'] - qrPixelMargin);
-    let pageLeftPixel = detective.points[0].x - (tokenParams['w'] - tokenParams['qx'] - qrPixelMargin);
-
-    //set transform
-    context.setTransform(scaleForX, horizontalSkew, verticalSkew, scaleForY, pageLeftPixel, pageTopPixel);
+    //cropped image displacement     console.log('encoded: '+encoded)
+    let pageTopPixel = (tokenParams['l']*pixelsPerInch - tokenParams['qy']*pixelsPerInch - qrPixelMargin) - detective.points[0].y;
+    let pageLeftPixel = (tokenParams['qx']*pixelsPerInch + qrPixelMargin) - detective.points[0].x ;
+    console.log('pageTopPixel '+pageTopPixel)
+    console.log('pageleftpixel '+ pageLeftPixel)
 
     //set the canvas size
     canvas.width = tokenParams['w'] * pixelsPerInch;
     canvas.height = tokenParams['l'] * pixelsPerInch;
 
+    //set transform
+    context.setTransform(scaleForX, horizontalSkew, verticalSkew, scaleForY, pageLeftPixel, pageTopPixel);
+    //context.setTransform(scaleForX, 0, 0, scaleForY, pageLeftPixel, pageTopPixel);
+
     //draw image with displacement
-    context.drawImage(image[0], 0, 0);
+    context.drawImage(images[0], 0, 0);
 
     //export canvas
     let thisCroppedImage = new Image();
-    thisCroppedImage.src = context.toDataURL();
+    let imgDataUrl = canvas.toDataURL("image/png");
+    thisCroppedImage.src = imgDataUrl;
     outputImages.push(thisCroppedImage);
 
     images = images.slice(1);
-    if(images.length == 0)
-      isDone[0] = true;
-    else
+    if(images.length > 0)
       qrcode.decode(images[0]);
+    else
+    {
+      generatePDF(outputImages, pageSize);
+    }
     //do something with image
   }
 
   qrcode.callback=cropCallback;
-  qrcode.decode(images[0]);
-
-  while(isDone[0] == false)
-    await sleep(100);
-  return {'outputImages' : outputImages, 
-          'pageSize' : pageSize};
+  qrcode.decode(images[0].src);
 }
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 
 
 function tokenize(l, separator){
 
-  let output= [];
+  let output= {};
   for (let i=0; i<l.length;i++){
 
     let t = l[i].split(separator)
-    output[l[0]] = l[1];
+    output[t[0]] = t[1];
   }
 
   return output;
@@ -164,6 +183,7 @@ function tokenize(l, separator){
 
 
 async function generatePDF(images, pageSize) {
+  console.log(images)
   let imageBytes = []; //this is a list
   for(let i=0; i < images.length; i++)
     imageBytes.push(images[i].src);
@@ -187,8 +207,6 @@ async function generatePDF(images, pageSize) {
     // Get the width and height of the page
     //let {width, height} = pages[i].getSize()
 
-    console.log(pages[i].getWidth());
-    console.log(pages[i].getHeight());
     imageBytes[i] = await pdfDoc.embedPng(imageBytes[i])
     //images to imageBytes
     //imgDims = imageBytes[i].scale(1)
@@ -202,7 +220,7 @@ async function generatePDF(images, pageSize) {
     })
   }
 
-  //downloadPDF(pdfDoc);
+  downloadPDF(pdfDoc);
   return pdfDoc;
 }
 

@@ -94,12 +94,12 @@
             var reader = new FileReader();
             reader.onload = function () {
                 var dataURL = reader.result;
-                preprocessed.push(output);
                 var output = document.createElement('div');
                 output.className = 'image-container';
+                
                 var image = document.createElement('img');
                 image.src = dataURL;
-
+                preprocessed.push(image);
                 
                 image.className = 'mx-auto my-2 clearfix w-10';
                 image.style.border = '1px solid black'; // Border style
