@@ -87,45 +87,48 @@
         //array to contain imageBytes of all uplaoded images (to be used for generating PDF)
         const preprocessed = [];
 
-        var openFile = function (file) {
-            $('#generatePDFbutton').removeClass('d-none');
-            $('#uploadedImages').removeClass('d-none');
-            var input = file.target;
-            var reader = new FileReader();
-            reader.onload = function () {
-                var dataURL = reader.result;
-                var output = document.createElement('div');
-                output.className = 'image-container';
-                
-                var image = document.createElement('img');
-                image.src = dataURL;
-                preprocessed.push(image);
-                
-                image.className = 'mx-auto my-2 clearfix w-10';
-                image.style.border = '1px solid black'; // Border style
+       var openFile = function (file) {
+    $('#generatePDFbutton').removeClass('d-none');
+    $('#uploadedImages').removeClass('d-none');
+    var input = file.target;
+    var reader = new FileReader();
+    reader.onload = function () {
+        var dataURL = reader.result;
+        var output = document.createElement('div');
+        output.className = 'image-container';
 
-                var closeButton = document.createElement('button');
-                closeButton.innerHTML = 'X';
-                closeButton.className = 'close-button';
-                closeButton.onclick = function () {
-                    output.remove(); // Remove the image container when X is clicked
-                    checkImages();
-                };
+        var image = document.createElement('img');
+        image.src = dataURL;
+        image.className = 'mx-auto my-2 clearfix w-10';
+        image.style.border = '1px solid black'; // Border style
 
-                output.appendChild(closeButton);
-                output.appendChild(image);
-                output.setAttribute('id', 'image_' + imageCounter++);
-
-                document.getElementById('uploadedImages').appendChild(output);
-                checkImages();
-                detectAndAlertCode(reader.result);
-            };
-            reader.onerror = function (error) {
-                console.log('Error: ', error);
-            };
-            reader.readAsDataURL(input.files[0]);
-            input.value = ''; //reset input value so you can upload same image multiple times
+        var closeButton = document.createElement('button');
+        closeButton.innerHTML = 'X';
+        closeButton.className = 'close-button';
+        closeButton.onclick = function () {
+            output.remove(); // Remove the image container when X is clicked
+            var index = preprocessed.indexOf(image);
+            if (index !== -1) {
+                preprocessed.splice(index, 1); // Remove the image from the preprocessed array
+            }
+            checkImages();
         };
+
+        output.appendChild(closeButton);
+        output.appendChild(image);
+        output.setAttribute('id', 'image_' + imageCounter++);
+
+        document.getElementById('uploadedImages').appendChild(output);
+        preprocessed.push(image); // Push the image to the preprocessed array
+        checkImages();
+        detectAndAlertCode(reader.result);
+    };
+    reader.onerror = function (error) {
+        console.log('Error: ', error);
+    };
+    reader.readAsDataURL(input.files[0]);
+    input.value = ''; // Reset input value so you can upload the same image multiple times
+};
 
         function switchToCamera() {
             document.getElementById('upload_button').hidden = true;
