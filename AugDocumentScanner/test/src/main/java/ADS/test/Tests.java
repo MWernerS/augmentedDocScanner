@@ -7,7 +7,7 @@ import static com.microsoft.playwright.assertions.PlaywrightAssertions.assertTha
 import java.io.File;
 import java.io.InputStream;
 
-public class QRTest {
+public class Tests {
 
     private static final boolean headless = false;
     private static final double slowmo = 0.0;
@@ -20,6 +20,8 @@ public class QRTest {
 
             qrCodeDetectionTest(browser);
             templateDownloadsTest(browser);
+            generatePDFDownloadsTest(browser);
+
 
         } catch (TestFailure e)
         {
@@ -59,10 +61,11 @@ public class QRTest {
         });
 
         InputStream is = download.createReadStream(); 
-        byte[] bytes = new byte[is.available()];
+        byte[] bytes = new byte[1_000];
         is.read(bytes);
         String h = ECrypto.hex(ECrypto.hash(bytes));
-        test(h.equals("e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"));
+        System.out.println(h);
+        test(h.equals("8ee0f3fab3381d7eb8c4d64ed2654b423b1e8274f0e037ee29ec746438ad6495"));
         page.close();
     }
 
@@ -83,5 +86,32 @@ public class QRTest {
         {
             super(reason);
         }
+    }
+
+    private static void generatePDFDownloadsTest(Browser browser) throws Exception
+    {
+        Page page = browser.newPage();
+        page.setDefaultTimeout(120_000);
+
+        File html = new File("../view/home.html"); 
+        page.navigate("file://"+html.getCanonicalPath());
+
+        File qrpng = new File("qr1.png");
+        page.getByTestId("fileupload").setInputFiles(Paths.get(qrpng.getCanonicalPath()));
+
+        // Wait for the download to start
+        Download download = page.waitForDownload(() -> {
+            // Perform the action that initiates download
+            page.getByText("Generate PDF").click();
+        });
+
+        InputStream is = download.createReadStream(); 
+        byte[] bytes = new byte[1_000];
+        is.read(bytes);
+        String h = ECrypto.hex(ECrypto.hash(bytes));
+        System.out.println("Number of bytes: "+ bytes.length);
+        System.out.println(h);
+        test(h.equals("bdb09f9347b77eff97e3673837b566eccc17b51e317ad4ecee10e6f79158ae10"));
+        page.close();
     }
 }
