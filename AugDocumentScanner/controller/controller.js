@@ -227,6 +227,10 @@ async function generatePDF(images, pageSize) {
 async function downloadPDF(pdfDoc) {
   //PDFDocument to bytes (a Uint8Array)
   const pdfBytes = await pdfDoc.save()
+  //pdfBytes is placed into a blob which can create a URL to be opened into a new tab
+  let blb = new Blob([pdfBytes], {type: 'application/pdf'});
+  let link = window.URL.createObjectURL(blb);
+  window.open(link);
   // Trigger the browser to download the PDF document
-  download(pdfBytes, "docScan.pdf", "application/pdf");
+  //download(pdfBytes, "docScan.pdf", "application/pdf");
 }
