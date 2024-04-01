@@ -74,7 +74,7 @@ async function crop(images)
     pageSize.height = tokenParams['l'];
 
     let detective = new Detector(qrcode.grayScaleToBitmap(qrcode.grayscale())).detect();
-    let qrWidthInBits = detective.bits.Height+4;
+    let qrWidthInBits = detective.bits.Height+4; //i think includes white margin
     let qrPoint0y = detective.points[0].y;
     let qrPoint1y = detective.points[1].y;
     let qrPoint0x = detective.points[0].x;
@@ -90,59 +90,60 @@ async function crop(images)
     let qrHorYDiff = detective.points[2].y - detective.points[1].y;
     let qrHorDiff = Math.sqrt(qrHorXDiff**2 + qrHorYDiff**2);
 
-
-    let canvas = document.createElement('canvas');
-    canvas.hidden = true;
-    canvas.height = tokenParams['l'] * pixelsPerInch;
-    canvas.width = tokenParams['w'] * pixelsPerInch;
-    let context = canvas.getContext('2d');
+    let newHeight = tokenParams['l'] * pixelsPerInch;
+    let newWidth = tokenParams['w'] * pixelsPerInch;
+    let {canvas, context} = newHiddenCanvas(newHeight, newWidth);
 
     console.log('qrwidthinbits: '+qrWidthInBits)
     console.log('qrwidthinpixels: '+ qrWidthInPixels)
     console.log('qrpixelmargin: '+qrPixelMargin)
     console.log('pixelsPerInch: '+pixelsPerInch)
 
-    //calculate scaling
-    let scaleForY = 1;
-    let scaleForX = qrVertDiff / qrHorDiff;
-    console.log('scaleforx: '+scaleForX)
 
-    
-    //calculate skew
-    let horizontalSkew = 0;
-    if(qrHorYDiff != 0)
-      //horizontalSkew = qrHorXDiff / qrHorYDiff;
-      horizontalSkew = -1 * qrHorYDiff / qrHorXDiff;
-    console.log('horizontalskew: '+horizontalSkew)
 
-    let verticalSkew = 0;
-    if(qrVertXDiff != 0)
-      //verticalSkew = qrVertYDiff / qrVertXDiff;
-      verticalSkew = -1 * qrVertXDiff / qrVertYDiff;
-    console.log('verticalskew: '+verticalSkew)
-    
+    ///detect page orientation
+    let qrRotation = Math.atan(qrHorYDiff / qrHorXDiff); //in radians
 
-    //cropped image size (height, width)
-    let newHeight = tokenParams['l'] * pixelsPerInch;
-    let newWidth = tokenParams['w'] * pixelsPerInch;
-    console.log(`newheight formula: ${tokenParams['l']} * ${pixelsPerInch}`)
-    console.log(`newwidth formula: ${tokenParams['w']} * ${pixelsPerInch}`)
-    console.log('newheight: '+newHeight)
-    console.log('newwidth: '+newWidth)
+    ///rotate page to 90 degrees
+    let bigEnoughCanvas;
+    if(newHeight > newWidth)
+      bigEnoughCanvas = Math.SQRT2 * newHeight;
+    else
+      bigEnoughCanvas = MATH.SQRT2 * newWidth;
+    let {canvas90, context90} = newHiddenCanvas(bigEnoughCanvas, bigEnoughCanvas);
+    context90.rotate(90 - qrRotation);
+    context90.drawImage(canvas.toDataURL(), 0, 0);
 
-    //cropped image displacement     console.log('encoded: '+encoded)
-    let pageTopPixel = (tokenParams['l']*pixelsPerInch - tokenParams['qy']*pixelsPerInch - qrPixelMargin) - detective.points[0].y;
-    let pageLeftPixel = (tokenParams['qx']*pixelsPerInch + qrPixelMargin) - detective.points[0].x ;
-    console.log('pageTopPixel '+pageTopPixel)
-    console.log('pageleftpixel '+ pageLeftPixel)
+
+    ///detect both skews
+
+
+    ///fix vertical keystone
+
+    ///rotate page to 0 degrees
+
+    ///fix new vertical keystone
+
+    ///re-scan qr code for qr placement cropping
+
+    ///crop
+
+    ///place
+
 
     //set the canvas size
     canvas.width = tokenParams['w'] * pixelsPerInch;
     canvas.height = tokenParams['l'] * pixelsPerInch;
 
+
+    /*
+    
     //set transform
     context.setTransform(scaleForX, horizontalSkew, verticalSkew, scaleForY, pageLeftPixel, pageTopPixel);
     //context.setTransform(scaleForX, 0, 0, scaleForY, pageLeftPixel, pageTopPixel);
+
+    */
+    
 
     //draw image with displacement
     context.drawImage(images[0], 0, 0);
@@ -168,6 +169,7 @@ async function crop(images)
 }
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 
+function kill(element) {element.remove()};
 
 function tokenize(l, separator){
 
@@ -179,6 +181,70 @@ function tokenize(l, separator){
   }
 
   return output;
+}
+
+function newHiddenCanvas(length, width)
+{
+  if (length == undefined)
+    length=0;
+  if(width == undefined)
+    width=0;
+
+  let canvas = document.createElement('canvas');
+  canvas.hidden = true;
+  canvas.height = length;
+  canvas.width = width;
+  let context = canvas.getContext('2d');
+
+  return {canvas, context}
+}
+
+function trapezoid(canvas, newTopPercent, newBottomPercent) { ///source image, percent at top, percent at bottom
+	const {width, height} = canvas;
+	const trapezoidedCanvas = newHiddenCanvas(width, height);
+	const ctx = trapezoidedCanvas.getContext('2d');
+	for (let y = 0; y < height; y++) {
+		const percentYOfHeight = y / height;
+		const percentWidth = ((1 - percentYOfHeight) * newTopPercent + percentYOfHeight * newBottomPercent);
+		const widthHere = width * percentWidth;
+		const leftXHere = (width / 2) - (widthHere / 2);
+    let sourceX = 0;
+    let sourceHeight = 1;
+    let destinationHeight = 1;
+		ctx.drawImage(canvas, sourceX, y, width, sourceHeight, leftXHere, y, widthHere, destinationHeight);
+	}
+	return trapezoidedCanvas;
+}
+
+function degreesToRadians(d)
+{
+  return d * Math.PI / 180;
+}
+function radiansToDegrees(r)
+{
+  return r*180/Math.PI;
+}
+
+function getImaginaryDot([ax, ay], [bx, by], [cx, cy], [dx, dy], qrWidthInBits)
+{
+  function getRuntDotCoordsBits(qrWidthInBits) //will need to subtract 3 from this for compatibility with library 
+  {
+    let qrModules = qrWidthInBits - 4;
+    return qrModules - 25 + 18;
+  }
+
+
+  let lengthOfRuntLine = Math.sqrt((dx - bx)**2 + (dy - by)**2);
+
+  let lengthOfRuntLineBits = getRuntDotCoordsBits(qrWidthInBits) - 3;
+  let expansionCoefficient = (lengthOfRuntLineBits+3)/lengthOfRuntLineBits;
+
+  let lengthOfImaginaryLine = expansionCoefficient * lengthOfRuntLine;
+
+  let ix = ((dx - bx) * expansionCoefficient) + bx;
+  let iy = ((dy - by) * expansionCoefficient) + by;
+
+  return [ix, iy];
 }
 
 
