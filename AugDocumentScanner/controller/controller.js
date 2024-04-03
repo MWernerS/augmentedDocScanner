@@ -171,6 +171,21 @@ async function crop(images)
 }
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 
+function newHiddenCanvas(length, width)
+{
+  if (length == undefined)
+    length=0;
+  if(width == undefined)
+    width=0;
+
+  let canvas = document.createElement('canvas');
+  canvas.hidden = true;
+  canvas.height = length;
+  canvas.width = width;
+  let context = canvas.getContext('2d');
+
+  return [canvas, context]
+}
 
 function tokenize(l, separator){
 
