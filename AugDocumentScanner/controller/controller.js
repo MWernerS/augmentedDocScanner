@@ -42,6 +42,40 @@ async function generatePdfEvent(images)
   //downloadPDF(pdf);
 }
 
+function pythagorean(ax,ay,bx,by){
+  return Math.sqrt((bx-ax)**2 + (by-ay)**2)
+}
+
+function getQRData(tokenParams, canvas, context){
+
+  if (canvas != undefined && context != undefined){
+    qrcode.imagedata = context.getImageData(0,0,canvas.width, canvas.height);
+  }
+
+  let detective = new Detector(qrcode.grayScaleToBitmap(qrcode.grayscale())).detect();
+    let qrWidthInBits = detective.bits.Height+4; //i think includes white margin
+    let qrPoint0y = detective.points[0].y;
+    let qrPoint1y = detective.points[1].y;
+    let qrPoint0x = detective.points[0].x;
+    let qrPoint1x = detective.points[1].x;
+
+    let qrWidthInPixels = Math.sqrt(Math.abs(qrPoint1y - qrPoint0y)**2 + Math.abs(qrPoint1x - qrPoint0x)**2)/(qrWidthInBits-11)*(qrWidthInBits);
+    let qrPixelMargin = 5.5/qrWidthInBits * qrWidthInPixels;
+    let pixelsPerInch = qrWidthInPixels/tokenParams["qw"];
+    let inchesPerPixel = tokenParams["qw"]/qrWidthInPixels;
+    let qrVertXDiff = detective.points[1].x - detective.points[0].x;
+    let qrVertYDiff = detective.points[1].y - detective.points[0].y;
+    let qrVertDiff = Math.sqrt(qrVertXDiff**2 + qrVertYDiff**2);
+    let qrHorXDiff = detective.points[2].x - detective.points[1].x;
+    let qrHorYDiff = detective.points[2].y - detective.points[1].y;
+    let qrHorDiff = Math.sqrt(qrHorXDiff**2 + qrHorYDiff**2);
+
+    return {
+      detective, qrWidthInBits, qrPoint0y, qrPoint1y, qrPoint0x, qrPoint1x, qrWidthInPixels, qrPixelMargin, pixelsPerInch,inchesPerPixel,
+      qrVertXDiff, qrVertYDiff,qrVertDiff ,qrHorXDiff, qrHorYDiff, qrHorDiff
+    }
+}
+
 async function crop(images)
 {
   let isDone = [false];
@@ -73,84 +107,83 @@ async function crop(images)
     pageSize.width = tokenParams['w'];
     pageSize.height = tokenParams['l'];
 
-    let detective = new Detector(qrcode.grayScaleToBitmap(qrcode.grayscale())).detect();
-    let qrWidthInBits = detective.bits.Height+4; //i think includes white margin
-    let qrPoint0y = detective.points[0].y;
-    let qrPoint1y = detective.points[1].y;
-    let qrPoint0x = detective.points[0].x;
-    let qrPoint1x = detective.points[1].x;
-    let qrWidthInPixels = Math.sqrt(Math.abs(qrPoint1y - qrPoint0y)**2 + Math.abs(qrPoint1x - qrPoint0x)**2)/(qrWidthInBits-11)*(qrWidthInBits);
-    let qrPixelMargin = 5.5/qrWidthInBits * qrWidthInPixels;
-    let pixelsPerInch = qrWidthInPixels/tokenParams["qw"];
-    let inchesPerPixel = tokenParams["qw"]/qrWidthInPixels;
-    let qrVertXDiff = detective.points[1].x - detective.points[0].x;
-    let qrVertYDiff = detective.points[1].y - detective.points[0].y;
-    let qrVertDiff = Math.sqrt(qrVertXDiff**2 + qrVertYDiff**2);
-    let qrHorXDiff = detective.points[2].x - detective.points[1].x;
-    let qrHorYDiff = detective.points[2].y - detective.points[1].y;
-    let qrHorDiff = Math.sqrt(qrHorXDiff**2 + qrHorYDiff**2);
+    //this is where we scan and get data
+    let data =  getQRData(tokenParams);
 
-    let newHeight = tokenParams['l'] * pixelsPerInch;
-    let newWidth = tokenParams['w'] * pixelsPerInch;
-    let {canvas, context} = newHiddenCanvas(newHeight, newWidth);
 
-    console.log('qrwidthinbits: '+qrWidthInBits)
-    console.log('qrwidthinpixels: '+ qrWidthInPixels)
-    console.log('qrpixelmargin: '+qrPixelMargin)
-    console.log('pixelsPerInch: '+pixelsPerInch)
+    let newHeight = tokenParams['l'] * data.pixelsPerInch;
+    let newWidth = tokenParams['w'] * data.pixelsPerInch;
+
+    console.log('qrwidthinbits: '+data.qrWidthInBits)
+    console.log('qrwidthinpixels: '+ data.qrWidthInPixels)
+    console.log('qrpixelmargin: '+data.qrPixelMargin)
+    console.log('pixelsPerInch: '+data.pixelsPerInch)
 
 
 
     ///detect page orientation
-    let qrRotation = Math.atan(qrHorYDiff / qrHorXDiff); //in radians
+    let qrRotation = Math.atan(data.qrHorYDiff / data.qrHorXDiff); //in radians
 
     ///rotate page to 90 degrees
     let bigEnoughCanvas;
     if(newHeight > newWidth)
       bigEnoughCanvas = Math.SQRT2 * newHeight;
     else
-      bigEnoughCanvas = MATH.SQRT2 * newWidth;
-    let {canvas90, context90} = newHiddenCanvas(bigEnoughCanvas, bigEnoughCanvas);
-    context90.rotate(90 - qrRotation);
-    context90.drawImage(canvas.toDataURL(), 0, 0);
+      bigEnoughCanvas = Math.SQRT2 * newWidth;
+    let [canvas90, context90] = newHiddenCanvas(bigEnoughCanvas, bigEnoughCanvas);
+    context90.rotate(degreesToRadians(90) - qrRotation);
+    context90.drawImage(images[0], 0, 0);
+    context90.setTransform(1, 0, 0, 1, 0, 0); // Reset transform to prevent skewing of subsequent drawings
 
 
     ///detect both skews
+   let imaginaryDot = getImaginaryDot([data.detective.points[0].x, data.detective.points[0].y],
+    [data.detective.points[1].x,data.detective.points[1].y],
+    [data.detective.points[2].x,data.detective.points[2].y],
+    [data.detective.points[3].x, data.detective.points[3].y],
+  data.qrWidthInBits);
 
+
+   let rightLine = pythagorean(data.detective.points[2].x,data.detective.points[2].y,imaginaryDot.x, imaginaryDot.y);
+   let leftLine = pythagorean(data.detective.points[0].x,data.detective.points[0].y,data.detective.points[1].x, data.detective.points[1].y);
+   let rightOverLeft = rightLine / leftLine;
+
+   let topLine = pythagorean(data.detective.points[1].x,data.detective.points[1].y,data.detective.points[2].x, data.detective.points[2].y);
+   let bottomLine = pythagorean(data.detective.points[0].x,data.detective.points[0].y,imaginaryDot.x,imaginaryDot.y);
+   let topOverBottom = topLine / bottomLine;
 
     ///fix vertical keystone
-
+    let firstUnskewed90Canvas = trapezoid(canvas, rightOverLeft, 1);
+    
     ///rotate page to 0 degrees
+    context90.clearRect(0, 0, canvas90.width, canvas90.height); // Clear canvas
+    context90.translate(canvas90.width / 2, canvas90.height / 2);
+    context90.rotate(-Math.PI / 2);
+    context90.drawImage(firstUnskewed90Canvas, -firstUnskewed90Canvas.width / 2, -firstUnskewed90Canvas.height / 2);
+
 
     ///fix new vertical keystone
+    let secondUnskewed0Canvas = trapezoid(canvas90, topOverBottom, 1);
 
     ///re-scan qr code for qr placement cropping
-
+    let secondData = getQRData(tokenParams, canvas90, context90);
+    
     ///crop
+    let [finalCanvas, finalContext] = newHiddenCanvas(tokenParams['l']*secondData.pixelsPerInch, tokenParams['w']*secondData.pixelsPerInch);
+    
+    
 
     ///place
+    let pageTopPixel = (tokenParams['l']*secondData.pixelsPerInch - tokenParams['qy']*secondData.pixelsPerInch - secondData.qrPixelMargin) - secondData.detective.points[0].y;
+    let pageLeftPixel = (tokenParams['qx']*secondData.pixelsPerInch + secondData.qrPixelMargin) - secondData.detective.points[0].x ;
+    console.log('pageTopPixel '+pageTopPixel);
+    console.log('pageleftpixel '+ pageLeftPixel);
 
-
-    //set the canvas size
-    canvas.width = tokenParams['w'] * pixelsPerInch;
-    canvas.height = tokenParams['l'] * pixelsPerInch;
-
-
-    /*
-    
-    //set transform
-    context.setTransform(scaleForX, horizontalSkew, verticalSkew, scaleForY, pageLeftPixel, pageTopPixel);
-    //context.setTransform(scaleForX, 0, 0, scaleForY, pageLeftPixel, pageTopPixel);
-
-    */
-    
-
-    //draw image with displacement
-    context.drawImage(images[0], 0, 0);
+    finalContext.drawImage(secondUnskewed0Canvas,pageLeftPixel, pageTopPixel);
 
     //export canvas
     let thisCroppedImage = new Image();
-    let imgDataUrl = canvas.toDataURL("image/png");
+    let imgDataUrl = finalCanvas.toDataURL("image/png");
     thisCroppedImage.src = imgDataUrl;
     outputImages.push(thisCroppedImage);
 
@@ -196,13 +229,12 @@ function newHiddenCanvas(length, width)
   canvas.width = width;
   let context = canvas.getContext('2d');
 
-  return {canvas, context}
+  return [canvas, context]
 }
 
 function trapezoid(canvas, newTopPercent, newBottomPercent) { ///source image, percent at top, percent at bottom
 	const {width, height} = canvas;
-	const trapezoidedCanvas = newHiddenCanvas(width, height);
-	const ctx = trapezoidedCanvas.getContext('2d');
+	const [trapezoidedCanvas, ctx] = newHiddenCanvas(width, height);
 	for (let y = 0; y < height; y++) {
 		const percentYOfHeight = y / height;
 		const percentWidth = ((1 - percentYOfHeight) * newTopPercent + percentYOfHeight * newBottomPercent);
@@ -244,7 +276,7 @@ function getImaginaryDot([ax, ay], [bx, by], [cx, cy], [dx, dy], qrWidthInBits)
   let ix = ((dx - bx) * expansionCoefficient) + bx;
   let iy = ((dy - by) * expansionCoefficient) + by;
 
-  return [ix, iy];
+  return {x:ix, y:iy};
 }
 
 
