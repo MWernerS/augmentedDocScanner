@@ -236,6 +236,8 @@ async function downloadPDF(pdfDoc) {
 function colorCorrect(canvas){
     var context = canvas.getContext('2d');
 
+    let [outputCanvas, outputContext] = newHiddenCanvas(canvas.width, canvas.height);
+
     // Get the CanvasPixelArray from the given coordinates and dimensions.
     var imgd = context.getImageData(0, 0, canvas.width, canvas.height);
     var pix = imgd.data;
@@ -259,12 +261,13 @@ function colorCorrect(canvas){
     }
     // Loop over each pixel and invert the color.
     for (var i = 0, n = pix.length; i < n; i += 4) {
-        pix[i] = (pix[i] - OBR) * (255/(OWR - OBR)); // Example: increase contrast by 20%
+        pix[i] = (pix[i] - OBR) * (255/(OWR - OBR));
         pix[i + 1] = (pix[i + 1] - OBG) * (255/(OWG - OBG));
         pix[i + 2] = (pix[i + 2] - OBB) * (255/(OWB - OBB));
         // i+3 is alpha (the fourth element)
     }
 
     // Draw the ImageData at the given (x,y) coordinates.
-    context.putImageData(imgd, 0, 0);
+    outputContext.putImageData(imgd, 0, 0);
+    return outputCanvas;
 }
