@@ -171,7 +171,7 @@ async function crop(images)
 }
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 
-function newHiddenCanvas(length, width)
+function newHiddenCanvas(width, length)
 {
   if (length == undefined)
     length=0;
