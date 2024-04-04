@@ -146,8 +146,9 @@ async function crop(images)
 
     //draw image with displacement
     context.drawImage(images[0], 0, 0);
-
-    colorCorrect(canvas);
+    
+    //Color Correction called on for the canvasa after cropping.
+    canvas = colorCorrect(canvas);
 
     //export canvas
     let thisCroppedImage = new Image();
@@ -160,7 +161,6 @@ async function crop(images)
       qrcode.decode(images[0]);
     else
     {
-      //colorCorrect(canvas);
       generatePDF(outputImages, pageSize);
     }
     //do something with image
@@ -283,6 +283,6 @@ function colorCorrect(canvas){
     }
 
     // Draw the ImageData at the given (x,y) coordinates.
-    outputContext.putImageData(imgd, 0, 0);
+    outputContext.putImageData(imgd, 0, 0, 0, 0, canvas.width, canvas.height);
     return outputCanvas;
 }
