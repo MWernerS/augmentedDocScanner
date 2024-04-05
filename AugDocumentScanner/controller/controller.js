@@ -146,6 +146,9 @@ async function crop(images)
 
     //draw image with displacement
     context.drawImage(images[0], 0, 0);
+    
+    //Color Correction called on for the canvasa after cropping.
+    canvas = colorCorrect(canvas);
 
     //export canvas
     let thisCroppedImage = new Image();
@@ -168,6 +171,21 @@ async function crop(images)
 }
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 
+function newHiddenCanvas(width, length)
+{
+  if (length == undefined)
+    length=0;
+  if(width == undefined)
+    width=0;
+
+  let canvas = document.createElement('canvas');
+  canvas.hidden = true;
+  canvas.height = length;
+  canvas.width = width;
+  let context = canvas.getContext('2d');
+
+  return [canvas, context]
+}
 
 function tokenize(l, separator){
 
@@ -219,7 +237,6 @@ async function generatePDF(images, pageSize) {
       height: pages[i].getHeight(),
     })
   }
-
   downloadPDF(pdfDoc);
   return pdfDoc;
 }
@@ -233,4 +250,43 @@ async function downloadPDF(pdfDoc) {
   window.open(link);
   // Trigger the browser to download the PDF document
   //download(pdfBytes, "docScan.pdf", "application/pdf");
+}
+
+function colorCorrect(canvas){
+    var context = canvas.getContext('2d');
+
+    let [outputCanvas, outputContext] = newHiddenCanvas(canvas.width, canvas.height);
+
+    // Get the CanvasPixelArray from the given coordinates and dimensions.
+    var imgd = context.getImageData(0, 0, canvas.width, canvas.height);
+    var pix = imgd.data;
+    var black = 255;
+    var white = 0;
+    var OWR, OWG, OWB, OBR, OBG, OBB;
+    for (var i = 0, n = pix.length; i < n; i += 4) {
+        var color = pix[i] + pix[i+1] + pix[i+2];
+        if(color > white){
+            white = color;
+            OWR = pix[i];
+            OWG = pix[i + 1];
+            OWB = pix[i + 2];
+        }
+        if(color < black){
+            black = color;
+            OBR = pix[i];
+            OBG = pix[i + 1];
+            OBB = pix[i + 2];
+        }
+    }
+    // Loop over each pixel and invert the color.
+    for (var i = 0, n = pix.length; i < n; i += 4) {
+        pix[i] = (pix[i] - OBR) * (255/(OWR - OBR));
+        pix[i + 1] = (pix[i + 1] - OBG) * (255/(OWG - OBG));
+        pix[i + 2] = (pix[i + 2] - OBB) * (255/(OWB - OBB));
+        // i+3 is alpha (the fourth element)
+    }
+
+    // Draw the ImageData at the given (x,y) coordinates.
+    outputContext.putImageData(imgd, 0, 0, 0, 0, canvas.width, canvas.height);
+    return outputCanvas;
 }
