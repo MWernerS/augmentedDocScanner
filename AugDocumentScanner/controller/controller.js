@@ -42,38 +42,71 @@ async function generatePdfEvent(images)
   //downloadPDF(pdf);
 }
 
-function pythagorean(ax,ay,bx,by){
-  return Math.sqrt((bx-ax)**2 + (by-ay)**2)
+function pythagorean()
+{
+  let sum = 0;
+  for (let i=0; i < arguments.length; i++)
+    sum+=arguments[i]**2;
+  return Math.sqrt(sum);
 }
 
 function getQRData(tokenParams, canvas, context){
 
   if (canvas != undefined && context != undefined){
-    qrcode.imagedata = context.getImageData(0,0,canvas.width, canvas.height);
+    console.log("changing detector source");
+    qrcode.callback = undefined;
+    qrcode.decode(canvas);
+    console.log(qrcode.imagedata)
   }
 
   let detective = new Detector(qrcode.grayScaleToBitmap(qrcode.grayscale())).detect();
-    let qrWidthInBits = detective.bits.Height+4; //i think includes white margin
-    let qrPoint0y = detective.points[0].y;
-    let qrPoint1y = detective.points[1].y;
-    let qrPoint0x = detective.points[0].x;
-    let qrPoint1x = detective.points[1].x;
+  let qrWidthInBits = detective.bits.Height+4; //i think includes white margin
+  let qrPoint0y = detective.points[0].y;
+  let qrPoint1y = detective.points[1].y;
+  let qrPoint0x = detective.points[0].x;
+  let qrPoint1x = detective.points[1].x;
 
-    let qrWidthInPixels = Math.sqrt(Math.abs(qrPoint1y - qrPoint0y)**2 + Math.abs(qrPoint1x - qrPoint0x)**2)/(qrWidthInBits-11)*(qrWidthInBits);
-    let qrPixelMargin = 5.5/qrWidthInBits * qrWidthInPixels;
-    let pixelsPerInch = qrWidthInPixels/tokenParams["qw"];
-    let inchesPerPixel = tokenParams["qw"]/qrWidthInPixels;
-    let qrVertXDiff = detective.points[1].x - detective.points[0].x;
-    let qrVertYDiff = detective.points[1].y - detective.points[0].y;
-    let qrVertDiff = Math.sqrt(qrVertXDiff**2 + qrVertYDiff**2);
-    let qrHorXDiff = detective.points[2].x - detective.points[1].x;
-    let qrHorYDiff = detective.points[2].y - detective.points[1].y;
-    let qrHorDiff = Math.sqrt(qrHorXDiff**2 + qrHorYDiff**2);
+  let qrWidthInPixels = Math.sqrt(Math.abs(qrPoint1y - qrPoint0y)**2 + Math.abs(qrPoint1x - qrPoint0x)**2)/(qrWidthInBits-11)*(qrWidthInBits);
+  let qrPixelMargin = 5.5/qrWidthInBits * qrWidthInPixels;
+  let pixelsPerInch = qrWidthInPixels/tokenParams["qw"];
+  let inchesPerPixel = tokenParams["qw"]/qrWidthInPixels;
+  let qrVertXDiff = detective.points[1].x - detective.points[0].x;
+  let qrVertYDiff = detective.points[1].y - detective.points[0].y;
+  let qrVertDiff = Math.sqrt(qrVertXDiff**2 + qrVertYDiff**2);
+  let qrHorXDiff = detective.points[2].x - detective.points[1].x;
+  let qrHorYDiff = detective.points[2].y - detective.points[1].y;
+  let qrHorDiff = Math.sqrt(qrHorXDiff**2 + qrHorYDiff**2);
 
-    return {
-      detective, qrWidthInBits, qrPoint0y, qrPoint1y, qrPoint0x, qrPoint1x, qrWidthInPixels, qrPixelMargin, pixelsPerInch,inchesPerPixel,
-      qrVertXDiff, qrVertYDiff,qrVertDiff ,qrHorXDiff, qrHorYDiff, qrHorDiff
-    }
+  let newHeight = tokenParams['l'] * pixelsPerInch;
+  let newWidth = tokenParams['w'] * pixelsPerInch;
+
+  ///detect page orientation
+  let qrRotation = Math.atan(qrHorYDiff / qrHorXDiff); //in radians
+    
+    ///detect both skews
+  let imaginaryDot = getImaginaryDot([detective.points[0].x, detective.points[0].y],
+    [detective.points[1].x,detective.points[1].y],
+    [detective.points[2].x,detective.points[2].y],
+    [detective.points[3].x, detective.points[3].y],
+    qrWidthInBits);
+    console.log(`Imaginary coordinages: (${imaginaryDot.x}, ${imaginaryDot.y})`)
+
+
+  let rightLineLength = pythagorean((detective.points[2].x - imaginaryDot.x), (detective.points[2].y- imaginaryDot.y));
+  let leftLineLength = pythagorean((detective.points[0].x - detective.points[1].x), (detective.points[0].y - detective.points[1].y));
+  let leftToRightLengthRatio = (leftLineLength / rightLineLength) ** (tokenParams['w'] / tokenParams['qw']);
+  console.log(`leftLine / rightLine -> ${leftLineLength} / ${rightLineLength} = ${leftToRightLengthRatio}`);
+
+  let topLineLength = pythagorean((detective.points[1].x - detective.points[2].x), (detective.points[1].y - detective.points[2].y));
+  let bottomLineLength = pythagorean((detective.points[0].x - imaginaryDot.x), (detective.points[0].y - imaginaryDot.y));
+  let topToBottomLengthRatio = (topLineLength / bottomLineLength) ** (tokenParams['l']/tokenParams['qw']);
+  console.log(`topLine / bottomLine -> ${topLineLength} / ${bottomLineLength} = ${topToBottomLengthRatio}`);
+
+  return {
+    detective, qrWidthInBits, qrPoint0y, qrPoint1y, qrPoint0x, qrPoint1x, qrWidthInPixels, qrPixelMargin, pixelsPerInch,inchesPerPixel,
+    qrVertXDiff, qrVertYDiff,qrVertDiff ,qrHorXDiff, qrHorYDiff, qrHorDiff, qrRotation, imaginaryDot, rightLineLength, leftLineLength, leftToRightLengthRatio,
+    topLineLength, bottomLineLength, topToBottomLengthRatio, newHeight, newWidth
+  }
 }
 
 async function crop(images)
@@ -110,68 +143,53 @@ async function crop(images)
     //this is where we scan and get data
     let data =  getQRData(tokenParams);
 
-
-    let newHeight = tokenParams['l'] * data.pixelsPerInch;
-    let newWidth = tokenParams['w'] * data.pixelsPerInch;
-
     console.log('qrwidthinbits: '+data.qrWidthInBits)
     console.log('qrwidthinpixels: '+ data.qrWidthInPixels)
     console.log('qrpixelmargin: '+data.qrPixelMargin)
     console.log('pixelsPerInch: '+data.pixelsPerInch)
 
 
-
-    ///detect page orientation
-    let qrRotation = Math.atan(data.qrHorYDiff / data.qrHorXDiff); //in radians
-
+    do {
     ///rotate page to 90 degrees
-    let bigEnoughCanvas;
-    if(newHeight > newWidth)
-      bigEnoughCanvas = Math.SQRT2 * newHeight;
-    else
-      bigEnoughCanvas = Math.SQRT2 * newWidth;
-    let [canvas90, context90] = newHiddenCanvas(bigEnoughCanvas, bigEnoughCanvas);
-    context90.rotate(degreesToRadians(90) - qrRotation);
+    let [canvas90, context90] = newHiddenCanvas(data.newHeight, data.newWidth);
+    context90.rotate(degreesToRadians(90) - data.qrRotation);
+    context90.translate(0, -1*data.newHeight * Math.sin(degreesToRadians(90)-data.qrRotation));
     context90.drawImage(images[0], 0, 0);
-    context90.setTransform(1, 0, 0, 1, 0, 0); // Reset transform to prevent skewing of subsequent drawings
 
-
-    ///detect both skews
-   let imaginaryDot = getImaginaryDot([data.detective.points[0].x, data.detective.points[0].y],
-    [data.detective.points[1].x,data.detective.points[1].y],
-    [data.detective.points[2].x,data.detective.points[2].y],
-    [data.detective.points[3].x, data.detective.points[3].y],
-  data.qrWidthInBits);
-
-
-   let rightLine = pythagorean(data.detective.points[2].x,data.detective.points[2].y,imaginaryDot.x, imaginaryDot.y);
-   let leftLine = pythagorean(data.detective.points[0].x,data.detective.points[0].y,data.detective.points[1].x, data.detective.points[1].y);
-   let rightOverLeft = rightLine / leftLine;
-
-   let topLine = pythagorean(data.detective.points[1].x,data.detective.points[1].y,data.detective.points[2].x, data.detective.points[2].y);
-   let bottomLine = pythagorean(data.detective.points[0].x,data.detective.points[0].y,imaginaryDot.x,imaginaryDot.y);
-   let topOverBottom = topLine / bottomLine;
 
     ///fix vertical keystone
-    let firstUnskewed90Canvas = trapezoid(canvas, rightOverLeft, 1);
+    let unskewed90Canvas = trapezoid(canvas90, 1, data.leftToRightLengthRatio)[0];
+    //let unskewed90Canvas = canvas90;
     
     ///rotate page to 0 degrees
-    context90.clearRect(0, 0, canvas90.width, canvas90.height); // Clear canvas
-    context90.translate(canvas90.width / 2, canvas90.height / 2);
-    context90.rotate(-Math.PI / 2);
-    context90.drawImage(firstUnskewed90Canvas, -firstUnskewed90Canvas.width / 2, -firstUnskewed90Canvas.height / 2);
-
+    let [canvas0, context0] = newHiddenCanvas(data.newWidth, data.newHeight);
+    context0.rotate(degreesToRadians(-90))
+    context0.translate(-1*data.newHeight, 0);
+    context0.drawImage(unskewed90Canvas, 0, 0)
 
     ///fix new vertical keystone
-    let secondUnskewed0Canvas = trapezoid(canvas90, topOverBottom, 1);
+    let [unskewed0Canvas, unskewed0Context] = trapezoid(canvas0, 1, data.topToBottomLengthRatio);
+    //let [unskewed0Canvas, unskewed0Context] = [canvas0, context0];
 
-    ///re-scan qr code for qr placement cropping
-    let secondData = getQRData(tokenParams, canvas90, context90);
     
+    ///re-scan for stretching
+    data = getQRData(tokenParams, unskewed0Canvas, unskewed0Context);
+
+    var [stretchedCanvas, stretchedContext] = newHiddenCanvas(unskewed0Canvas.width, unskewed0Canvas.height * data.qrVertDiff/data.qrHorDiff)
+    stretchedContext.drawImage(unskewed0Canvas, 0, 0, stretchedCanvas.width, stretchedCanvas.height);
+
+    data = getQRData(tokenParams, stretchedCanvas, stretchedContext);
+
+
+    } while (.99 < data.topToBottomLengthRatio
+            && data.topToBottomLengthRatio < 1.01
+            && .99 < data.leftToRightLengthRatio
+            && data.leftToRightLengthRatio < 1.01
+            && qrHorDiff==qrVertDiff);
+
+    let secondData = data;
     ///crop
-    let [finalCanvas, finalContext] = newHiddenCanvas(tokenParams['l']*secondData.pixelsPerInch, tokenParams['w']*secondData.pixelsPerInch);
-    
-    
+    let [finalCanvas, finalContext] = newHiddenCanvas(secondData.newWidth, secondData.newHeight);
 
     ///place
     let pageTopPixel = (tokenParams['l']*secondData.pixelsPerInch - tokenParams['qy']*secondData.pixelsPerInch - secondData.qrPixelMargin) - secondData.detective.points[0].y;
@@ -179,17 +197,23 @@ async function crop(images)
     console.log('pageTopPixel '+pageTopPixel);
     console.log('pageleftpixel '+ pageLeftPixel);
 
-    finalContext.drawImage(secondUnskewed0Canvas,pageLeftPixel, pageTopPixel);
+    finalContext.drawImage(stretchedCanvas,pageLeftPixel, pageTopPixel);
+    
 
     //export canvas
     let thisCroppedImage = new Image();
     let imgDataUrl = finalCanvas.toDataURL("image/png");
+    //console.log(`height: ${secondUnskewed0Canvas.height}, width: ${secondUnskewed0Canvas.width}`)
+    //let imgDataUrl = secondUnskewed0Canvas.toDataURL("image/png");
     thisCroppedImage.src = imgDataUrl;
     outputImages.push(thisCroppedImage);
 
     images = images.slice(1);
     if(images.length > 0)
+    {
+      qrcode.callback = cropCallback;
       qrcode.decode(images[0]);
+    }
     else
     {
       generatePDF(outputImages, pageSize);
@@ -216,7 +240,7 @@ function tokenize(l, separator){
   return output;
 }
 
-function newHiddenCanvas(length, width)
+function newHiddenCanvas(width, length)
 {
   if (length == undefined)
     length=0;
@@ -224,7 +248,8 @@ function newHiddenCanvas(length, width)
     width=0;
 
   let canvas = document.createElement('canvas');
-  canvas.hidden = true;
+  //canvas.hidden = true;
+  document.body.appendChild(canvas);
   canvas.height = length;
   canvas.width = width;
   let context = canvas.getContext('2d');
@@ -245,7 +270,7 @@ function trapezoid(canvas, newTopPercent, newBottomPercent) { ///source image, p
     let destinationHeight = 1;
 		ctx.drawImage(canvas, sourceX, y, width, sourceHeight, leftXHere, y, widthHere, destinationHeight);
 	}
-	return trapezoidedCanvas;
+	return [trapezoidedCanvas, ctx];
 }
 
 function degreesToRadians(d)
