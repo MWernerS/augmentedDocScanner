@@ -33,7 +33,7 @@ function qrCoordsToPage(qr) {
     let points = qr.points;    qrresultElement.innerHTML = `QR point coordinates: (${points[0].x}, ${points[0].y}), (${points[1].x}, ${points[1].y}), (${points[2].x}, ${points[2].y})`
   }
 }
-const { PDFDocument, StandardFonts, rgb } = PDFLib
+const { PDFDocument, StandardFonts, rgb } = PDFLib //important for the PDFLib
 
 async function generatePdfEvent(images)
 {
@@ -184,12 +184,9 @@ function tokenize(l, separator){
 
 async function generatePDF(images, pageSize) {
   console.log(images)
-  let imageBytes = []; //this is a list
+  let imageBytes = []; //list of images in byte form
   for(let i=0; i < images.length; i++)
     imageBytes.push(images[i].src);
-
-  //pageSize.length (inches)
-  //pageSize.width (inches)
 
   //create new .pdf document
   const pdfDoc = await PDFDocument.create()
@@ -220,13 +217,80 @@ async function generatePDF(images, pageSize) {
     })
   }
 
-  downloadPDF(pdfDoc);
+  downloadPDF(pdfDoc, "scan");
   return pdfDoc;
 }
 
-async function downloadPDF(pdfDoc) {
+let pngImageBytes = "";
+
+async function createTemplate(pageWidth, pageHeight, qrX, qrY, qrS) {
+  // Create a new PDFDocument
+  const pdfDoc = await PDFDocument.create()
+
+  // Add a blank page to the document
+  const page = pdfDoc.addPage()
+
+  page.setSize(pageWidth, pageHeight)
+
+  //qr image
+  await spawnQR(pageWidth/72, pageHeight/72, qrX/72, qrY/72, qrS/72);
+  //console.log(pngImageBytes);
+  const pngImage = await pdfDoc.embedPng(pngImageBytes)
+
+  //correct
+  page.drawImage(pngImage, {
+    x: qrX-72,
+    y: pageHeight-qrY,
+    width: qrS,
+    height: qrS,
+  })
+
+  // Serialize the PDFDocument to bytes (a Uint8Array)
+  const pdfBytes = await pdfDoc.save()
+
+  downloadPDF(pdfDoc, "template");
+}
+
+async function spawnQR(pageWidth, pageHeight, qrX, qrY, qrS) {
+  return new Promise((resolve, reject) => {
+    //generate website URL
+    var qrCodeImageUrl = "https://api.qrserver.com/v1/create-qr-code/?size=500x500&data=" +
+      "https://user.fm/augdocscan.beastman.fastmail.com/view/home.html?" + // website
+      "w=" + pageWidth +
+      "&l=" + pageHeight +
+      "&qw=" + qrS +
+      "&qx=" + qrX +
+      "&qy=" + qrY;
+    //console.log(qrCodeImageUrl);
+
+    //getch QR code image
+    fetch(qrCodeImageUrl)
+      .then(response => response.blob())
+      .then(blob => {
+        // Read blob as ArrayBuffer
+        const reader = new FileReader();
+        reader.readAsArrayBuffer(blob);
+
+        // Handle when FileReader finishes loading
+        reader.onloadend = () => {
+          const arrayBuffer = reader.result;
+          const bytes = new Uint8Array(arrayBuffer);
+          const base64Data = btoa(String.fromCharCode(...bytes));
+          pngImageBytes = base64Data;
+          //console.log(pngImageBytes);
+          resolve(); // Resolve the promise when image processing is complete
+        };
+      })
+      .catch(error => {
+        console.error("Error fetching QR code image:", error);
+        reject(error); // Reject the promise if there's an error
+      });
+  });
+}
+
+async function downloadPDF(pdfDoc, pdfName) {
   //PDFDocument to bytes (a Uint8Array)
   const pdfBytes = await pdfDoc.save()
   // Trigger the browser to download the PDF document
-  download(pdfBytes, "docScan.pdf", "application/pdf");
+  download(pdfBytes, pdfName+".pdf", "application/pdf");
 }
