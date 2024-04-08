@@ -57,7 +57,7 @@ public class Tests {
         // Wait for the download to start
         Download download = page.waitForDownload(() -> {
             // Perform the action that initiates download
-            page.getByText("Create PDF").click();
+            page.getByText("Create Template").click();
         });
 
         InputStream is = download.createReadStream(); 

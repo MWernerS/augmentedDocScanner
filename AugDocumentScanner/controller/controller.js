@@ -245,9 +245,6 @@ async function createTemplate(pageWidth, pageHeight, qrX, qrY, qrS) {
     height: qrS,
   })
 
-  // Serialize the PDFDocument to bytes (a Uint8Array)
-  const pdfBytes = await pdfDoc.save()
-
   downloadPDF(pdfDoc, "template");
 }
 
@@ -291,6 +288,7 @@ async function spawnQR(pageWidth, pageHeight, qrX, qrY, qrS) {
 async function downloadPDF(pdfDoc, pdfName) {
   //PDFDocument to bytes (a Uint8Array)
   const pdfBytes = await pdfDoc.save()
+  //console.log(pdfBytes);
   // Trigger the browser to download the PDF document
   download(pdfBytes, pdfName+".pdf", "application/pdf");
 }
