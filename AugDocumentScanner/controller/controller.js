@@ -30,7 +30,8 @@ function qrCoordsToPage(qr) {
     qrresultElement.innerHTML = "";
   }
   else {
-    let points = qr.points;    qrresultElement.innerHTML = `QR point coordinates: (${points[0].x}, ${points[0].y}), (${points[1].x}, ${points[1].y}), (${points[2].x}, ${points[2].y})`
+    let points = qr.points; 
+    qrresultElement.innerHTML = `QR point coordinates: (${points[0].x}, ${points[0].y}), (${points[1].x}, ${points[1].y}), (${points[2].x}, ${points[2].y})`
   }
 }
 const { PDFDocument, StandardFonts, rgb } = PDFLib
@@ -50,13 +51,17 @@ function pythagorean()
   return Math.sqrt(sum);
 }
 
-function getQRData(tokenParams, canvas, context){
+async function getQRData(tokenParams, canvas, context){
 
   if (canvas != undefined && context != undefined){
     console.log("changing detector source");
-    qrcode.callback = undefined;
-    qrcode.decode(canvas);
-    console.log(qrcode.imagedata)
+    let promise = new Promise((resolve) => {
+      qrcode.callback = resolve;
+      qrcode.decode(canvas.toDataURL("image/png"));
+    })
+    let before=Date.now();
+    console.log(`Promise result ${await promise}`);
+    console.log(`Waited ${Date.now() - before} millis for detection`)
   }
 
   let detective = new Detector(qrcode.grayScaleToBitmap(qrcode.grayscale())).detect();
@@ -66,22 +71,24 @@ function getQRData(tokenParams, canvas, context){
   let qrPoint0x = detective.points[0].x;
   let qrPoint1x = detective.points[1].x;
 
-  let qrWidthInPixels = Math.sqrt(Math.abs(qrPoint1y - qrPoint0y)**2 + Math.abs(qrPoint1x - qrPoint0x)**2)/(qrWidthInBits-11)*(qrWidthInBits);
+  let qrWidthInPixels = pythagorean(qrPoint1y - qrPoint0y, qrPoint1x - qrPoint0x)/(qrWidthInBits-11)*(qrWidthInBits);
   let qrPixelMargin = 5.5/qrWidthInBits * qrWidthInPixels;
   let pixelsPerInch = qrWidthInPixels/tokenParams["qw"];
   let inchesPerPixel = tokenParams["qw"]/qrWidthInPixels;
   let qrVertXDiff = detective.points[1].x - detective.points[0].x;
   let qrVertYDiff = detective.points[1].y - detective.points[0].y;
-  let qrVertDiff = Math.sqrt(qrVertXDiff**2 + qrVertYDiff**2);
+  let qrVertDiff = pythagorean(qrVertXDiff, qrVertYDiff);
   let qrHorXDiff = detective.points[2].x - detective.points[1].x;
   let qrHorYDiff = detective.points[2].y - detective.points[1].y;
-  let qrHorDiff = Math.sqrt(qrHorXDiff**2 + qrHorYDiff**2);
+  let qrHorDiff = pythagorean(qrHorXDiff, qrHorYDiff);
 
   let newHeight = tokenParams['l'] * pixelsPerInch;
   let newWidth = tokenParams['w'] * pixelsPerInch;
 
   ///detect page orientation
   let qrRotation = Math.atan(qrHorYDiff / qrHorXDiff); //in radians
+  if(qrVertYDiff > 0)
+    qrRotation=Math.PI/2 - qrRotation;
     
     ///detect both skews
   let imaginaryDot = getImaginaryDot([detective.points[0].x, detective.points[0].y],
@@ -102,6 +109,8 @@ function getQRData(tokenParams, canvas, context){
   let topToBottomLengthRatio = (topLineLength / bottomLineLength) ** (tokenParams['l']/tokenParams['qw']);
   console.log(`topLine / bottomLine -> ${topLineLength} / ${bottomLineLength} = ${topToBottomLengthRatio}`);
 
+  console.log(`(${qrPoint0x}, ${qrPoint0y}), (${qrPoint1x}, ${qrPoint1y})`);
+
   return {
     detective, qrWidthInBits, qrPoint0y, qrPoint1y, qrPoint0x, qrPoint1x, qrWidthInPixels, qrPixelMargin, pixelsPerInch,inchesPerPixel,
     qrVertXDiff, qrVertYDiff,qrVertDiff ,qrHorXDiff, qrHorYDiff, qrHorDiff, qrRotation, imaginaryDot, rightLineLength, leftLineLength, leftToRightLengthRatio,
@@ -111,10 +120,9 @@ function getQRData(tokenParams, canvas, context){
 
 async function crop(images)
 {
-  let isDone = [false];
   let outputImages = [];
   let pageSize = {};
-  function cropCallback(encoded)
+  async function cropCallback(encoded)
   {
     let params=[];
     if(encoded.includes("?"))
@@ -141,20 +149,24 @@ async function crop(images)
     pageSize.height = tokenParams['l'];
 
     //this is where we scan and get data
-    let data =  getQRData(tokenParams);
+    let data = await getQRData(tokenParams);
 
     console.log('qrwidthinbits: '+data.qrWidthInBits)
     console.log('qrwidthinpixels: '+ data.qrWidthInPixels)
     console.log('qrpixelmargin: '+data.qrPixelMargin)
     console.log('pixelsPerInch: '+data.pixelsPerInch)
 
+    let [beginningCanvas, beginningContext] = newHiddenCanvas(images[0].naturalWidth, images[0].naturalHeight);
+    beginningContext.drawImage(images[0], 0, 0);
+    let tries=1;
 
     do {
     ///rotate page to 90 degrees
-    let [canvas90, context90] = newHiddenCanvas(data.newHeight, data.newWidth);
+    let [canvas90, context90] = newHiddenCanvas(beginningCanvas.height, beginningCanvas.width);
     context90.rotate(degreesToRadians(90) - data.qrRotation);
-    context90.translate(0, -1*data.newHeight * Math.sin(degreesToRadians(90)-data.qrRotation));
-    context90.drawImage(images[0], 0, 0);
+    console.log("qr rotation: "+radiansToDegrees(data.qrRotation));
+    context90.translate(0, -1*canvas90.width * Math.sin(degreesToRadians(90)-data.qrRotation));
+    context90.drawImage(beginningCanvas, 0, 0);
 
 
     ///fix vertical keystone
@@ -162,9 +174,9 @@ async function crop(images)
     //let unskewed90Canvas = canvas90;
     
     ///rotate page to 0 degrees
-    let [canvas0, context0] = newHiddenCanvas(data.newWidth, data.newHeight);
+    let [canvas0, context0] = newHiddenCanvas(canvas90.height, canvas90.width);
     context0.rotate(degreesToRadians(-90))
-    context0.translate(-1*data.newHeight, 0);
+    context0.translate(-1*canvas0.height, 0);
     context0.drawImage(unskewed90Canvas, 0, 0)
 
     ///fix new vertical keystone
@@ -173,19 +185,25 @@ async function crop(images)
 
     
     ///re-scan for stretching
-    data = getQRData(tokenParams, unskewed0Canvas, unskewed0Context);
+    data = await getQRData(tokenParams, unskewed0Canvas, unskewed0Context);
 
-    var [stretchedCanvas, stretchedContext] = newHiddenCanvas(unskewed0Canvas.width, unskewed0Canvas.height * data.qrVertDiff/data.qrHorDiff)
+    var [stretchedCanvas, stretchedContext] = newHiddenCanvas(unskewed0Canvas.width, unskewed0Canvas.height * data.qrHorDiff/data.qrVertDiff)
+    console.log(`qrVertXDiff: `+data.qrVertXDiff);
+    console.log(`qrVertYDiff: `+data.qrVertYDiff);
+    console.log(`data.qrHorDiff/data.qrVertDiff -> ${data.qrHorDiff}/${data.qrVertDiff} = ${data.qrHorDiff/data.qrVertDiff}`);
     stretchedContext.drawImage(unskewed0Canvas, 0, 0, stretchedCanvas.width, stretchedCanvas.height);
+    beginningCanvas = stretchedCanvas;
+    beginningContext = stretchedContext;
 
-    data = getQRData(tokenParams, stretchedCanvas, stretchedContext);
+    data = await getQRData(tokenParams, stretchedCanvas, stretchedContext);
 
 
     } while (.99 < data.topToBottomLengthRatio
             && data.topToBottomLengthRatio < 1.01
             && .99 < data.leftToRightLengthRatio
             && data.leftToRightLengthRatio < 1.01
-            && qrHorDiff==qrVertDiff);
+            && data.qrHorDiff==data.qrVertDiff
+            && --tries > 0);
 
     let secondData = data;
     ///crop
@@ -197,7 +215,7 @@ async function crop(images)
     console.log('pageTopPixel '+pageTopPixel);
     console.log('pageleftpixel '+ pageLeftPixel);
 
-    finalContext.drawImage(stretchedCanvas,pageLeftPixel, pageTopPixel);
+    finalContext.drawImage(stretchedCanvas, pageLeftPixel, pageTopPixel);
     
 
     //export canvas
@@ -226,7 +244,7 @@ async function crop(images)
 }
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 
-function kill(element) {element.remove()};
+function destroy(element) {element.remove()};
 
 function tokenize(l, separator){
 
