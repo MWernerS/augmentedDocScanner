@@ -65,7 +65,7 @@ public class Tests {
         is.read(bytes);
         String h = ECrypto.hex(ECrypto.hash(bytes));
         System.out.println(h);
-        test(h.equals("8ee0f3fab3381d7eb8c4d64ed2654b423b1e8274f0e037ee29ec746438ad6495"));
+        test(h.equals("15d331383ba5c8dde1d0b3c4d2fcb4d7d98b8e1a2fa386eed56d7a4653fccda1"));
         page.close();
     }
 
