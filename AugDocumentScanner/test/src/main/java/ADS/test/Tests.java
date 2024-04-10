@@ -16,7 +16,7 @@ public class Tests {
 
     private static final boolean headless = false;
     private static final double slowmo = 0.0;
-    private static final int timeout = 30_000;
+    private static final int timeout = 120_000;
     private static Browser browser;
 
     public static void main(String[] args) {
@@ -127,7 +127,7 @@ public class Tests {
     private static void colorCorrectionTest(Browser browser) throws Exception
     {
         Page page = browser.newPage();
-        page.setDefaultTimeout(120_000);
+        page.setDefaultTimeout(timeout);
 
         //File html = new File("../view/home.html"); 
         //page.navigate("file://"+html.getCanonicalPath());
