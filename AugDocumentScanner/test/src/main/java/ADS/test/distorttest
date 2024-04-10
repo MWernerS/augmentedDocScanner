@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Canvas Skew Test</title>
+</head>
+<body>
+  <input type="file" id="fileInput">
+  <button onclick="processImage()">Process Image</button>
+
+  <script>
+    async function canvasSkewV(canvas, t, b) {
+      const { width, height } = canvas;
+      const r = document.createElement('canvas');
+      r.width = width;
+      r.height = height;
+      const ctx = r.getContext('2d');
+      for (let y = 0; y < height; y++) {
+        const pY = y / height;
+        const sX = ((1 - pY) * t + pY * b);
+        const w = ((width / 2) * sX) * 2;
+        const x = (width / 2) - (w / 2);
+        ctx.drawImage(canvas, 0, y, width, 1, x, y, w, 1);
+      }
+      return r;
+    }
+
+    async function processImage() {
+      const fileInput = document.getElementById('fileInput');
+      const file = fileInput.files[0];
+      if (!file) {
+        alert('Please select an image file.');
+        return;
+      }
+
+      const img = new Image();
+      img.src = URL.createObjectURL(file);
+      await new Promise((resolve, reject) => {
+        img.onload = resolve;
+        img.onerror = reject;
+      });
+
+      const canvas = document.createElement('canvas');
+      canvas.width = img.height; // Swap width and height for rotated canvas
+      canvas.height = img.width;
+      const ctx = canvas.getContext('2d');
+      
+      // Rotate the canvas 90 degrees clockwise
+      ctx.translate(canvas.width / 2, canvas.height / 2);
+      ctx.rotate(Math.PI / 2);
+      ctx.drawImage(img, -img.width / 2, -img.height / 2, img.width, img.height);
+      ctx.setTransform(1, 0, 0, 1, 0, 0); // Reset transform to prevent skewing of subsequent drawings
+
+      const cvs = await canvasSkewV(canvas, 1, 0.5); // Perform skewing
+
+      // Rotate canvas back
+      ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear canvas
+      ctx.translate(canvas.width / 2, canvas.height / 2);
+      ctx.rotate(-Math.PI / 2);
+      ctx.drawImage(cvs, -cvs.width / 2, -cvs.height / 2);
+
+	//perform skewing again
+	   const cvs2 = await canvasSkewV(canvas, 1, 0.5);
+
+      const downloadLink = document.createElement('a');
+      downloadLink.href = canvas.toDataURL('image/png');
+      downloadLink.download = 'checkered-skewed.png';
+      document.body.appendChild(downloadLink);
+      downloadLink.click();
+    }
+  </script>
+</body>
+</html>
