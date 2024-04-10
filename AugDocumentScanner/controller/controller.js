@@ -266,8 +266,8 @@ function newHiddenCanvas(width, length)
     width=0;
 
   let canvas = document.createElement('canvas');
-  //canvas.hidden = true;
-  document.body.appendChild(canvas);
+  canvas.hidden = true;
+  //document.body.appendChild(canvas);
   canvas.height = length;
   canvas.width = width;
   let context = canvas.getContext('2d');

@@ -2,7 +2,6 @@ package ADS.test;
 
 import com.microsoft.playwright.*;
 import java.nio.file.Paths;
-import java.lang.Thread;
 import static com.microsoft.playwright.assertions.PlaywrightAssertions.assertThat;
 import java.io.File;
 import java.io.InputStream;
@@ -11,19 +10,23 @@ public class Tests {
 
     private static final boolean headless = false;
     private static final double slowmo = 0.0;
+    private static final int timeout = 30_000;
+    private static Browser browser;
 
     public static void main(String[] args) {
         System.out.println("Working Directory = " + System.getProperty("user.dir"));
         try (Playwright playwright = Playwright.create()) {
-            Browser browser = playwright.firefox().launch(new BrowserType.LaunchOptions().setHeadless(headless).setSlowMo(slowmo));
+            browser = playwright.firefox().launch(new BrowserType.LaunchOptions().setHeadless(headless).setSlowMo(slowmo));
            
 
-            qrCodeDetectionTest(browser);
-            templateDownloadsTest(browser);
-            generatePDFDownloadsTest(browser);
+            qrCodeDetectionTest();
+            templateDownloadsTest();
+            generatePDFDownloadsTest();
+            cropTest();
 
 
-        } catch (TestFailure e)
+        }
+        catch (TestFailure | PlaywrightException e)
         {
             throw e;
         }
@@ -33,7 +36,7 @@ public class Tests {
         }
     }
 
-    private static void qrCodeDetectionTest(Browser browser) throws Exception
+    private static void qrCodeDetectionTest() throws Exception
     {
             Page page = browser.newPage();
 
@@ -48,7 +51,7 @@ public class Tests {
 
     }
 
-    private static void templateDownloadsTest(Browser browser) throws Exception
+    private static void templateDownloadsTest() throws Exception
     {
         Page page = browser.newPage();
         File html = new File("../view/pdfgen.html"); 
@@ -88,10 +91,10 @@ public class Tests {
         }
     }
 
-    private static void generatePDFDownloadsTest(Browser browser) throws Exception
+    private static void generatePDFDownloadsTest() throws Exception
     {
         Page page = browser.newPage();
-        page.setDefaultTimeout(120_000);
+        page.setDefaultTimeout(timeout);
 
         File html = new File("../view/home.html"); 
         page.navigate("file://"+html.getCanonicalPath());
@@ -109,9 +112,29 @@ public class Tests {
         byte[] bytes = new byte[1_000];
         is.read(bytes);
         String h = ECrypto.hex(ECrypto.hash(bytes));
-        System.out.println("Number of bytes: "+ bytes.length);
         System.out.println(h);
         test(h.equals("bdb09f9347b77eff97e3673837b566eccc17b51e317ad4ecee10e6f79158ae10"));
         page.close();
+    }
+
+    private static void cropTest() throws Exception
+    {
+        Page page = browser.newPage();
+        page.setDefaultTimeout(timeout);
+
+        File cropTestHtml = new File("croptest.html");
+        page.navigate("file://"+cropTestHtml.getCanonicalPath());
+
+        File inputPhoto = new File("qrpage8.jpg");
+        page.getByTestId("fileupload").setInputFiles(Paths.get(inputPhoto.getCanonicalPath()));
+        
+        Locator outputText = page.getByText("done", new Page.GetByTextOptions().setExact(true));
+        outputText.waitFor();
+
+        Locator outputImage = page.getByTestId("finaloutputimage");
+        outputImage.waitFor();
+        System.out.println("output image innerhtml: "+ECrypto.hash(outputImage.innerHTML()));
+
+        test("62135b1db1bcae13ab4a6b4321cc7dce8be2820fd6d8b9bb1e25687ece232c68".equals(ECrypto.hash(outputImage.innerHTML())));
     }
 }

@@ -1,0 +1,70 @@
+<script type="text/javascript" src="../controller/jsqrcode/src/grid.js"></script>
+<script type="text/javascript" src="../controller/jsqrcode/src/version.js"></script>
+<script type="text/javascript" src="../controller/jsqrcode/src/detector.js"></script>
+<script type="text/javascript" src="../controller/jsqrcode/src/formatinf.js"></script>
+<script type="text/javascript" src="../controller/jsqrcode/src/errorlevel.js"></script>
+<script type="text/javascript" src="../controller/jsqrcode/src/bitmat.js"></script>
+<script type="text/javascript" src="../controller/jsqrcode/src/datablock.js"></script>
+<script type="text/javascript" src="../controller/jsqrcode/src/bmparser.js"></script>
+<script type="text/javascript" src="../controller/jsqrcode/src/datamask.js"></script>
+<script type="text/javascript" src="../controller/jsqrcode/src/rsdecoder.js"></script>
+<script type="text/javascript" src="../controller/jsqrcode/src/gf256poly.js"></script>
+<script type="text/javascript" src="../controller/jsqrcode/src/gf256.js"></script>
+<script type="text/javascript" src="../controller/jsqrcode/src/decoder.js"></script>
+<script type="text/javascript" src="../controller/jsqrcode/src/qrcode.js"></script>
+<script type="text/javascript" src="../controller/jsqrcode/src/findpat.js"></script>
+<script type="text/javascript" src="../controller/jsqrcode/src/alignpat.js"></script>
+<script type="text/javascript" src="../controller/jsqrcode/src/databr.js"></script>
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script src="https://unpkg.com/pdf-lib@1.4.0"></script>
+<script src="https://unpkg.com/downloadjs@1.4.7"></script>
+
+<script src="../controller/controller.js"></script>
+
+<script>
+    function generatePDF(images)
+    {
+        document.getElementById('finaloutputimage').innerHTML = images[0].src;
+
+        let outputText = document.createElement("a")
+        outputText.innerHTML='done';
+        outputText['data-testid']='done';
+        document.body.appendChild(outputText);
+    }
+    let preprocessed=[];
+    let imageCounter=0;
+    var openFile = function (file) {
+        $('#generatePDFbutton').removeClass('d-none');
+        $('#uploadedImages').removeClass('d-none');
+        var input = file.target;
+        var reader = new FileReader();
+        reader.onload = function () {
+            var dataURL = reader.result;
+            var output = document.createElement('div');
+            output.className = 'image-container';
+
+            var image = document.createElement('img');
+            image.src = dataURL;
+
+            output.appendChild(image);
+            output.setAttribute('id', 'image_' + imageCounter++);
+
+            document.getElementById('uploadedImages').appendChild(output);
+            preprocessed.push(image); // Push the image to the preprocessed array
+
+            crop(preprocessed);
+        };
+        reader.onerror = function (error) {
+            console.log('Error: ', error);
+        };
+        reader.readAsDataURL(input.files[0]);
+        input.value = ''; // Reset input value so you can upload the same image multiple times
+    };
+    
+</script>
+
+<input data-testid='fileupload' id='getFile' type='file' accept='image/*' onchange='openFile(event)'>
+<div id="uploadedImages"></div>
+<p data-testid="finaloutputimage" id="finaloutputimage"></p>
