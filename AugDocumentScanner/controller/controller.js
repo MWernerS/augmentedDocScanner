@@ -34,7 +34,7 @@ function qrCoordsToPage(qr) {
     qrresultElement.innerHTML = `QR point coordinates: (${points[0].x}, ${points[0].y}), (${points[1].x}, ${points[1].y}), (${points[2].x}, ${points[2].y})`
   }
 }
-const { PDFDocument, StandardFonts, rgb } = PDFLib
+const { PDFDocument, StandardFonts, rgb } = PDFLib //important for the PDFLib
 
 async function generatePdfEvent(images)
 {
@@ -158,6 +158,7 @@ async function crop(images)
 
     let [beginningCanvas, beginningContext] = newHiddenCanvas(images[0].naturalWidth, images[0].naturalHeight);
     beginningContext.drawImage(images[0], 0, 0);
+    beginningCanvas = colorCorrect(beginningCanvas);
     let tries=1;
 
     do {
@@ -325,12 +326,9 @@ function getImaginaryDot([ax, ay], [bx, by], [cx, cy], [dx, dy], qrWidthInBits)
 
 async function generatePDF(images, pageSize) {
   console.log(images)
-  let imageBytes = []; //this is a list
+  let imageBytes = []; //list of images in byte form
   for(let i=0; i < images.length; i++)
     imageBytes.push(images[i].src);
-
-  //pageSize.length (inches)
-  //pageSize.width (inches)
 
   //create new .pdf document
   const pdfDoc = await PDFDocument.create()
@@ -361,13 +359,125 @@ async function generatePDF(images, pageSize) {
     })
   }
 
-  downloadPDF(pdfDoc);
+  previewPDF(pdfDoc);
   return pdfDoc;
 }
 
-async function downloadPDF(pdfDoc) {
+let pngImageBytes = "";
+
+async function createTemplate(pageWidth, pageHeight, qrX, qrY, qrS) {
+  // Create a new PDFDocument
+  const pdfDoc = await PDFDocument.create()
+
+  // Add a blank page to the document
+  const page = pdfDoc.addPage()
+
+  page.setSize(pageWidth, pageHeight)
+
+  //qr image
+  await spawnQR(pageWidth/72, pageHeight/72, qrX/72, qrY/72, qrS/72);
+  //console.log(pngImageBytes);
+  const pngImage = await pdfDoc.embedPng(pngImageBytes)
+
+  //correct
+  page.drawImage(pngImage, {
+    x: qrX-72,
+    y: pageHeight-qrY,
+    width: qrS,
+    height: qrS,
+  })
+
+  downloadPDF(pdfDoc, "template");
+}
+
+async function spawnQR(pageWidth, pageHeight, qrX, qrY, qrS) {
+  return new Promise((resolve, reject) => {
+    //generate website URL
+    var qrCodeImageUrl = "https://api.qrserver.com/v1/create-qr-code/?size=500x500&data=" +
+      "https://user.fm/augdocscan.beastman.fastmail.com/view/home.html?" + // website
+      "w=" + pageWidth +
+      "&l=" + pageHeight +
+      "&qw=" + qrS +
+      "&qx=" + qrX +
+      "&qy=" + qrY;
+    //console.log(qrCodeImageUrl);
+
+    //getch QR code image
+    fetch(qrCodeImageUrl)
+      .then(response => response.blob())
+      .then(blob => {
+        // Read blob as ArrayBuffer
+        const reader = new FileReader();
+        reader.readAsArrayBuffer(blob);
+
+        // Handle when FileReader finishes loading
+        reader.onloadend = () => {
+          const arrayBuffer = reader.result;
+          const bytes = new Uint8Array(arrayBuffer);
+          const base64Data = btoa(String.fromCharCode(...bytes));
+          pngImageBytes = base64Data;
+          //console.log(pngImageBytes);
+          resolve(); // Resolve the promise when image processing is complete
+        };
+      })
+      .catch(error => {
+        console.error("Error fetching QR code image:", error);
+        reject(error); // Reject the promise if there's an error
+      });
+  });
+}
+
+async function previewPDF(pdfDoc) {
+  const pdfBytes = await pdfDoc.save()
+  //pdfBytes is placed into a blob which can create a URL to be opened into a new tab
+  let blb = new Blob([pdfBytes], {type: 'application/pdf'});
+  let link = window.URL.createObjectURL(blb);
+  window.open(link);
+}
+
+async function downloadPDF(pdfDoc, pdfName) {
   //PDFDocument to bytes (a Uint8Array)
   const pdfBytes = await pdfDoc.save()
+  
   // Trigger the browser to download the PDF document
-  download(pdfBytes, "docScan.pdf", "application/pdf");
+  download(pdfBytes, pdfName+".pdf", "application/pdf");
+}
+
+function colorCorrect(canvas){
+    var context = canvas.getContext('2d');
+
+    let [outputCanvas, outputContext] = newHiddenCanvas(canvas.width, canvas.height);
+
+    // Get the CanvasPixelArray from the given coordinates and dimensions.
+    var imgd = context.getImageData(0, 0, canvas.width, canvas.height);
+    var pix = imgd.data;
+    var black = 255;
+    var white = 0;
+    var OWR, OWG, OWB, OBR, OBG, OBB;
+    for (var i = 0, n = pix.length; i < n; i += 4) {
+        var color = pix[i] + pix[i+1] + pix[i+2];
+        if(color > white){
+            white = color;
+            OWR = pix[i];
+            OWG = pix[i + 1];
+            OWB = pix[i + 2];
+        }
+        if(color < black){
+            black = color;
+            OBR = pix[i];
+            OBG = pix[i + 1];
+            OBB = pix[i + 2];
+        }
+    }
+    // Loop over each pixel and invert the color.
+    for (var i = 0, n = pix.length; i < n; i += 4) {
+        pix[i] = (pix[i] - OBR) * (255/(OWR - OBR));
+        pix[i + 1] = (pix[i + 1] - OBG) * (255/(OWG - OBG));
+        pix[i + 2] = (pix[i + 2] - OBB) * (255/(OWB - OBB));
+        // i+3 is alpha (the fourth element)
+    }
+
+    // Draw the ImageData at the given (x,y) coordinates.
+    outputContext.putImageData(imgd, 0, 0, 0, 0, canvas.width, canvas.height);
+    return outputCanvas;
 }
