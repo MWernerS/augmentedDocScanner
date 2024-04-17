@@ -27,7 +27,7 @@ function detectAndAlertCode(img) {
 function qrCoordsToPage(qr) {
   let qrresultElement = document.getElementById('qrresult');
   if (qr == undefined) {
-    qrresultElement.innerHTML = "";
+    qrresultElement.innerHTML = "<span style='color: red;'>Error detecting QR code, please insert an image with a valid QR code.</span>";
   }
   else {
     let points = qr.points; 
