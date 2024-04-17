@@ -158,7 +158,10 @@ async function crop(images)
 
     let [beginningCanvas, beginningContext] = newHiddenCanvas(images[0].naturalWidth, images[0].naturalHeight);
     beginningContext.drawImage(images[0], 0, 0);
+    //Checks if Color Correction wants to be done to the cropped page
+    if(document.getElementById('myCheck').checked){
     beginningCanvas = colorCorrect(beginningCanvas);
+    }
     let tries=1;
 
     do {
@@ -359,7 +362,12 @@ async function generatePDF(images, pageSize) {
     })
   }
 
-  previewPDF(pdfDoc);
+  //previewPDF(pdfDoc);
+  const pdfBytes = await pdfDoc.save()
+  //pdfBytes is placed into a blob which can create a URL to be opened into a new tab
+  let blb = new Blob([pdfBytes], {type: 'application/pdf'});
+  let link = window.URL.createObjectURL(blb);
+  window.open(link);
   return pdfDoc;
 }
 
@@ -427,13 +435,13 @@ async function spawnQR(pageWidth, pageHeight, qrX, qrY, qrS) {
   });
 }
 
-async function previewPDF(pdfDoc) {
+/*async function previewPDF(pdfDoc) {
   const pdfBytes = await pdfDoc.save()
   //pdfBytes is placed into a blob which can create a URL to be opened into a new tab
   let blb = new Blob([pdfBytes], {type: 'application/pdf'});
   let link = window.URL.createObjectURL(blb);
   window.open(link);
-}
+}*/
 
 async function downloadPDF(pdfDoc, pdfName) {
   //PDFDocument to bytes (a Uint8Array)

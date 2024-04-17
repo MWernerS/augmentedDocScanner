@@ -90,6 +90,7 @@
        var openFile = function (file) {
     $('#generatePDFbutton').removeClass('d-none');
     $('#uploadedImages').removeClass('d-none');
+    $('#checkBox').removeClass('d-none');
     var input = file.target;
     var reader = new FileReader();
     reader.onload = function () {
@@ -278,6 +279,9 @@
         </button>
     </div>
 
+    <div class = "d-none" id="checkBox">
+        Color Correction? <input type="checkbox" class = "" id="myCheck"> 
+    </div>
 
     <!-- Adds functionality to the buttons -->
     <script>
