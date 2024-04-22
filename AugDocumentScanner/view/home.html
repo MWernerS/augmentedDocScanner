@@ -154,34 +154,47 @@
 </head>
 <body>
 
+<script>
+    let loaded=0;
+    function librincr()
+    {
+        loaded++;
+    }
+    function librassert()
+    {
+        if(loaded < 23)
+            alert("ERROR: not all libraries loaded");
+    }
+    
+</script>
 <!-- Include jquery and bootstrap -->
-<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js" onload="librincr()"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js" onload="librincr()"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js" onload="librincr()"></script>
 
 <!-- pdf library import -->
-<script src="https://unpkg.com/pdf-lib@1.4.0"></script>
-<script src="https://unpkg.com/downloadjs@1.4.7"></script>
+<script src="https://unpkg.com/pdf-lib@1.4.0" onload="librincr()"></script>
+<script src="https://unpkg.com/downloadjs@1.4.7" onload="librincr()"></script>
 
     <!-- Controller and qr libraries -->
-    <script type="text/javascript" src="../controller/jsqrcode/src/grid.js"></script>
-    <script type="text/javascript" src="../controller/jsqrcode/src/version.js"></script>
-    <script type="text/javascript" src="../controller/jsqrcode/src/detector.js"></script>
-    <script type="text/javascript" src="../controller/jsqrcode/src/formatinf.js"></script>
-    <script type="text/javascript" src="../controller/jsqrcode/src/errorlevel.js"></script>
-    <script type="text/javascript" src="../controller/jsqrcode/src/bitmat.js"></script>
-    <script type="text/javascript" src="../controller/jsqrcode/src/datablock.js"></script>
-    <script type="text/javascript" src="../controller/jsqrcode/src/bmparser.js"></script>
-    <script type="text/javascript" src="../controller/jsqrcode/src/datamask.js"></script>
-    <script type="text/javascript" src="../controller/jsqrcode/src/rsdecoder.js"></script>
-    <script type="text/javascript" src="../controller/jsqrcode/src/gf256poly.js"></script>
-    <script type="text/javascript" src="../controller/jsqrcode/src/gf256.js"></script>
-    <script type="text/javascript" src="../controller/jsqrcode/src/decoder.js"></script>
-    <script type="text/javascript" src="../controller/jsqrcode/src/qrcode.js"></script>
-    <script type="text/javascript" src="../controller/jsqrcode/src/findpat.js"></script>
-    <script type="text/javascript" src="../controller/jsqrcode/src/alignpat.js"></script>
-    <script type="text/javascript" src="../controller/jsqrcode/src/databr.js"></script>
-    <script src="../controller/controller.js"></script>
+    <script type="text/javascript" src="../controller/jsqrcode/src/grid.js" onload="librincr()"></script>
+    <script type="text/javascript" src="../controller/jsqrcode/src/version.js" onload="librincr()"></script>
+    <script type="text/javascript" src="../controller/jsqrcode/src/detector.js" onload="librincr()"></script>
+    <script type="text/javascript" src="../controller/jsqrcode/src/formatinf.js" onload="librincr()"></script>
+    <script type="text/javascript" src="../controller/jsqrcode/src/errorlevel.js" onload="librincr()"></script>
+    <script type="text/javascript" src="../controller/jsqrcode/src/bitmat.js" onload="librincr()"></script>
+    <script type="text/javascript" src="../controller/jsqrcode/src/datablock.js" onload="librincr()"></script>
+    <script type="text/javascript" src="../controller/jsqrcode/src/bmparser.js" onload="librincr()"></script>
+    <script type="text/javascript" src="../controller/jsqrcode/src/datamask.js" onload="librincr()"></script>
+    <script type="text/javascript" src="../controller/jsqrcode/src/rsdecoder.js" onload="librincr()"></script>
+    <script type="text/javascript" src="../controller/jsqrcode/src/gf256poly.js" onload="librincr()"></script>
+    <script type="text/javascript" src="../controller/jsqrcode/src/gf256.js" onload="librincr()"></script>
+    <script type="text/javascript" src="../controller/jsqrcode/src/decoder.js" onload="librincr()"></script>
+    <script type="text/javascript" src="../controller/jsqrcode/src/qrcode.js" onload="librincr()"></script>
+    <script type="text/javascript" src="../controller/jsqrcode/src/findpat.js" onload="librincr()"></script>
+    <script type="text/javascript" src="../controller/jsqrcode/src/alignpat.js" onload="librincr()"></script>
+    <script type="text/javascript" src="../controller/jsqrcode/src/databr.js" onload="librincr()"></script>
+    <script src="../controller/controller.js" onload="librassert()"></script>
 
     <!--- Navigation Bar -->
     <nav class="navbar navbar-expand navbar-dark bg-dark fixed-top colored-navbar">
