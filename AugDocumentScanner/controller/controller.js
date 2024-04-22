@@ -158,7 +158,10 @@ async function crop(images)
 
     let [beginningCanvas, beginningContext] = newHiddenCanvas(images[0].naturalWidth, images[0].naturalHeight);
     beginningContext.drawImage(images[0], 0, 0);
+    //Checks if Color Correction wants to be done to the cropped page
+    if(document.getElementById('myCheck').checked){
     beginningCanvas = colorCorrect(beginningCanvas);
+    }
     let tries=1;
 
     do {
@@ -360,7 +363,6 @@ async function generatePDF(images, pageSize) {
   }
 
   previewPDF(pdfDoc);
-  return pdfDoc;
 }
 
 let pngImageBytes = "";
