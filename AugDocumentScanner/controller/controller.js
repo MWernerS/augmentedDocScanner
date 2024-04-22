@@ -38,6 +38,8 @@ const { PDFDocument, StandardFonts, rgb } = PDFLib //important for the PDFLib
 
 async function generatePdfEvent(images)
 {
+  document.getElementById('checkBox').style.display = 'none';
+  document.getElementById('pdfGeneratingMessage').style.display = 'block';
   let cropResults = crop(images);
   //let pdf = generatePDF(cropResults.croppedImages, cropResults.pageSize);
   //downloadPDF(pdf);
@@ -158,7 +160,10 @@ async function crop(images)
 
     let [beginningCanvas, beginningContext] = newHiddenCanvas(images[0].naturalWidth, images[0].naturalHeight);
     beginningContext.drawImage(images[0], 0, 0);
+    //Checks if Color Correction wants to be done to the cropped page
+    if(document.getElementById('myCheck').checked){
     beginningCanvas = colorCorrect(beginningCanvas);
+    }
     let tries=1;
 
     do {
@@ -358,9 +363,9 @@ async function generatePDF(images, pageSize) {
       height: pages[i].getHeight(),
     })
   }
-
+  document.getElementById('pdfGeneratingMessage').style.display = 'none';
+document.getElementById('checkBox').style.display = 'block';
   previewPDF(pdfDoc);
-  return pdfDoc;
 }
 
 let pngImageBytes = "";
