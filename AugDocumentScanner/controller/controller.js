@@ -38,6 +38,8 @@ const { PDFDocument, StandardFonts, rgb } = PDFLib //important for the PDFLib
 
 async function generatePdfEvent(images)
 {
+  document.getElementById('checkBox').style.display = 'none';
+  document.getElementById('pdfGeneratingMessage').style.display = 'block';
   let cropResults = crop(images);
   //let pdf = generatePDF(cropResults.croppedImages, cropResults.pageSize);
   //downloadPDF(pdf);
@@ -361,7 +363,8 @@ async function generatePDF(images, pageSize) {
       height: pages[i].getHeight(),
     })
   }
-
+  document.getElementById('pdfGeneratingMessage').style.display = 'none';
+document.getElementById('checkBox').style.display = 'block';
   previewPDF(pdfDoc);
 }
 
@@ -383,8 +386,8 @@ async function createTemplate(pageWidth, pageHeight, qrX, qrY, qrS) {
 
   //correct
   page.drawImage(pngImage, {
-    x: qrX-72,
-    y: pageHeight-qrY,
+    x: qrX,
+    y: qrY,
     width: qrS,
     height: qrS,
   })
@@ -395,17 +398,18 @@ async function createTemplate(pageWidth, pageHeight, qrX, qrY, qrS) {
 async function spawnQR(pageWidth, pageHeight, qrX, qrY, qrS) {
   return new Promise((resolve, reject) => {
     //generate website URL
-    var qrCodeImageUrl = "https://api.qrserver.com/v1/create-qr-code/?size=500x500&data=" +
-      "https://user.fm/augdocscan.beastman.fastmail.com/view/home.html?" + // website
+    var qrCodeAPI = "https://quickchart.io/qr?text=";
+    let encoded = "https://tiny.emich.edu/augdocscan?" + // website
       "w=" + pageWidth +
       "&l=" + pageHeight +
       "&qw=" + qrS +
       "&qx=" + qrX +
       "&qy=" + qrY;
-    //console.log(qrCodeImageUrl);
+    console.log(qrCodeAPI+encoded);
+    encoded = encodeURIComponent(encoded);
 
     //getch QR code image
-    fetch(qrCodeImageUrl)
+    fetch(qrCodeAPI+encoded)
       .then(response => response.blob())
       .then(blob => {
         // Read blob as ArrayBuffer
