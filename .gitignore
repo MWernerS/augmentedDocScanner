@@ -268,3 +268,7 @@ $RECYCLE.BIN/
 
 #maven builds
 AugDocumentScanner/test/target/
+AugDocumentScanner/test/target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst
+AugDocumentScanner/test/target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst
+AugDocumentScanner/test/target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst
+AugDocumentScanner/test/target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst
