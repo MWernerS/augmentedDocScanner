@@ -38,6 +38,8 @@ const { PDFDocument, StandardFonts, rgb } = PDFLib //important for the PDFLib
 
 async function generatePdfEvent(images)
 {
+  document.getElementById('checkBox').style.display = 'none';
+  document.getElementById('pdfGeneratingMessage').style.display = 'block';
   let cropResults = crop(images);
   //let pdf = generatePDF(cropResults.croppedImages, cropResults.pageSize);
   //downloadPDF(pdf);
@@ -361,7 +363,8 @@ async function generatePDF(images, pageSize) {
       height: pages[i].getHeight(),
     })
   }
-
+  document.getElementById('pdfGeneratingMessage').style.display = 'none';
+document.getElementById('checkBox').style.display = 'block';
   previewPDF(pdfDoc);
 }
 
